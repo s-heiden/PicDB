@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="controllers.MainWindowController" 
+            prefHeight="400"
+            prefWidth="600" 
+            xmlns="http://javafx.com/javafx/8"
+            fx:id="rootPane">
+    <!-- 1. Menu and Search bars -->
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <!-- 1.1 Menu bar-->
+            <MenuBar>
+                <Menu text="File">
+                    <MenuItem fx:id="menu_file_open" text="Open" onAction="#openImagesFolder"/>
+                    <MenuItem fx:id="menu_file_save" text="Save" onAction="#saveImageMetadata"/>
+                    <MenuItem fx:id="menu_file_exit" text="Exit" onAction="#closeProgram"/>
+                </Menu>
+                <Menu text="Options">
+                    <MenuItem text="Generate image report"/>
+                    <MenuItem text="Generate tags report"/>
+                    <MenuItem text="Photographers" onAction="#showPhotographers"/>
+                </Menu>
+                <Menu text="Help">
+                    <MenuItem text="Help" onAction="#showHelp"/>
+                    <MenuItem text="About" onAction="#showAbout"/>
+                </Menu>
+            </MenuBar>
+            <!-- 1.2 Search bar-->
+            <HBox>
+                <Region maxHeight="-Infinity" prefWidth="200.0" HBox.hgrow="ALWAYS"/>
+                <TextField promptText="Search"/>
+                <Button mnemonicParsing="false" text="Search">
+                    <HBox.margin>
+                        <Insets/>
+                    </HBox.margin>
+                </Button>
+            </HBox>
+        </VBox>
+    </top>
+    <!-- 2. Main part -->
+    <center>
+        <SplitPane dividerPositions="0.7" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0"
+                   BorderPane.alignment="CENTER">
+            <!--2.1. upper pane-->
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <SplitPane dividerPositions="0.6" prefHeight="234.0" prefWidth="598.0"
+                           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+                    <!-- 2.1.1 left upper pane-->
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0"/>
+
+                    <!-- 2.1.2 right upper pane-->
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                        <TabPane prefHeight="269.0" prefWidth="175.0" tabClosingPolicy="UNAVAILABLE"
+                                 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <Tab text="IPTC">
+                                <VBox>
+                                    <ScrollPane prefViewportHeight="167.0"
+                                                prefViewportWidth="234.0">
+                                        <GridPane fx:id="iptc_gridpane">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES"
+                                                                   minWidth="10.0"
+                                                                   prefWidth="100.0"/>
+                                                <ColumnConstraints hgrow="SOMETIMES"
+                                                                   minWidth="10.0"
+                                                                   prefWidth="100.0"/>
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                            </rowConstraints>
+                                            <Label text="Record Version:">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <Label text="ObjectType:"
+                                                   GridPane.rowIndex="1">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <Label text="ObjectAttribute:"
+                                                   GridPane.rowIndex="2">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <Label text="ObjectName:"
+                                                   GridPane.rowIndex="3">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <Label text="EditStatus:"
+                                                   GridPane.rowIndex="4">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <Label text="LocationName:"
+                                                   GridPane.rowIndex="5">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <TextField fx:id="iptc_text1" text="foo" GridPane.columnIndex="1">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <TextField fx:id="iptc_text2" text="foo"
+                                                       GridPane.columnIndex="1"
+                                                       GridPane.rowIndex="1">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <TextField fx:id="iptc_text3" text="foo"
+                                                       GridPane.columnIndex="1"
+                                                       GridPane.rowIndex="2">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <TextField fx:id="iptc_text4" text="foo"
+                                                       GridPane.columnIndex="1"
+                                                       GridPane.rowIndex="3">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <TextField fx:id="iptc_text5" text="foo"
+                                                       GridPane.columnIndex="1"
+                                                       GridPane.rowIndex="4">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <TextField fx:id="iptc_text6" text="foo"
+                                                       GridPane.columnIndex="1"
+                                                       GridPane.rowIndex="5">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <padding>
+                                                <Insets left="10.0"/>
+                                            </padding>
+                                        </GridPane>
+                                    </ScrollPane>
+                                    <HBox>
+                                        <Button fx:id="iptc_edit_btn"  text="Edit" onAction="#editIptc">
+                                            <HBox.margin>
+                                                <Insets right="5.0"/>
+                                            </HBox.margin>
+                                        </Button>
+                                        <Button fx:id="iptc_save_btn"  text="Save" onAction="#saveIptc"/>
+                                        <VBox.margin>
+                                            <Insets bottom="5.0" left="5.0" top="5.0"/>
+                                        </VBox.margin>
+                                    </HBox>
+                                </VBox>
+                            </Tab>
+                            <Tab text="EXIF">
+                                <VBox>
+                                    <ScrollPane prefViewportHeight="167.0"
+                                                prefViewportWidth="234.0">
+                                        <GridPane fx:id="exif_gridpane">
+                                            <Label text="Version:">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <Label text="Type:"
+                                                   GridPane.rowIndex="1">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <Label text="Attribute:"
+                                                   GridPane.rowIndex="2">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <Label text="Name:"
+                                                   GridPane.rowIndex="3">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <Label text="Status:"
+                                                   GridPane.rowIndex="4">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <Label text="Name:"
+                                                   GridPane.rowIndex="5">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </Label>
+                                            <TextField fx:id="exif_text1" text="bar"
+                                                       GridPane.columnIndex="1">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <TextField fx:id="exif_text2" text="bar"
+                                                       GridPane.columnIndex="1"
+                                                       GridPane.rowIndex="1">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <TextField fx:id="exif_text3" text="bar"
+                                                       GridPane.columnIndex="1"
+                                                       GridPane.rowIndex="2">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <TextField fx:id="exif_text4" text="bar"
+                                                       GridPane.columnIndex="1"
+                                                       GridPane.rowIndex="3">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <TextField fx:id="exif_text5" text="bar"
+                                                       GridPane.columnIndex="1"
+                                                       GridPane.rowIndex="4">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <TextField fx:id="exif_text6" text="bar"
+                                                       GridPane.columnIndex="1"
+                                                       GridPane.rowIndex="5">
+                                                <font>
+                                                    <Font size="11.0"/>
+                                                </font>
+                                            </TextField>
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES"
+                                                                   minWidth="10.0"
+                                                                   prefWidth="100.0"/>
+                                                <ColumnConstraints hgrow="SOMETIMES"
+                                                                   minWidth="10.0"
+                                                                   prefWidth="100.0"/>
+                                            </columnConstraints>
+                                            <padding>
+                                                <Insets left="10.0"/>
+                                            </padding>
+                                            <rowConstraints>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0"
+                                                                prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                            </rowConstraints>
+                                        </GridPane>
+                                    </ScrollPane>
+                                    <HBox>
+                                        <Button fx:id="exif_edit_btn" text="Edit" onAction="#editExif">
+                                            <HBox.margin>
+                                                <Insets right="5.0"/>
+                                            </HBox.margin>
+                                        </Button>
+                                        <Button fx:id="exif_save_btn" text="Save" onAction="#saveExif"/>
+                                        <VBox.margin>
+                                            <Insets bottom="5.0" left="5.0" top="5.0"/>
+                                        </VBox.margin>
+                                    </HBox>
+                                </VBox>
+                            </Tab>
+                        </TabPane>
+                    </AnchorPane>
+                </SplitPane>
+            </AnchorPane>
+
+            <!--2.2 lower pane-->
+            <ScrollPane prefViewportHeight="168.0" prefViewportWidth="598.0"/>
+        </SplitPane>
+    </center>
+</BorderPane>
