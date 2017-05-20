@@ -129,7 +129,7 @@ public class MainWindowController implements Initializable {
 
         // adjust the content depending on menu item
         if (title.equals("About")) {
-            Image image = new Image("file:resources/logo.jpg");
+            Image image = new Image("file:src/resources/logo.jpg");
             ImageView imageView = new ImageView();
             imageView.setImage(image);
             imageView.setFitHeight(100);
@@ -190,10 +190,8 @@ public class MainWindowController implements Initializable {
 
     public void showPhotographers(ActionEvent actionEvent) {
 
-//        PhotographersController pController = new PhotographersController();
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/Photographers.fxml"));
-//        loader.setController(pController);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/PhotographersView.fxml"));
+        System.out.println(loader.getLocation());
         try {
             Pane mainPane = loader.load();
             Stage stage = new Stage();
