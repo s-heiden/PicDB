@@ -1,7 +1,6 @@
 # PicDB
 
 ## Version 0.1
-
 - Enthält die PictureListView, das ist ein horizontal scrollbarer Bereich, der
   Bilder eines Ordners darstellt.
 - Es kann gescrollt werden.
