@@ -132,7 +132,7 @@ public class SQLiteDAL implements DataAccessLayer {
     }
 
     /**
-     * Returns a filtered list of Pictures from the directory, based on a database string.
+     * Returns a filtered list of Pictures from the directory, based on a database SQLiteDAL.
      *
      * @param namePart may contain a name which is searched in the database
      * @param photographerParts may contain photographer information which is searched in the database
@@ -190,35 +190,13 @@ public class SQLiteDAL implements DataAccessLayer {
 
         try {
             statement = connection.prepareStatement(string);
-
             statement.setInt(1, id);
-
             result = statement.executeQuery();
-
+            
             if (result.next()) {
-                // picture = makePictureModel(result);
-
-                picture.setID(result.getInt("id"));
-                picture.setFileName(result.getString("filename"));
-                picture.setIPTC(new IPTC());
-
-                picture.getIPTC().setCaption(result.getString("iptc_caption"));
-                picture.getIPTC().setHeadline(result.getString("iptc_headline"));
-                picture.getIPTC().setKeywords(result.getString("iptc_keywords"));
-                picture.getIPTC().setByLine(result.getString("iptc_byline"));
-                picture.getIPTC().setCopyrightNotice(result.getString("iptc_copyrightnotice"));
-
-                picture.setEXIF(new EXIF());
-                picture.getEXIF().setMake(result.getString("exif_make"));
-                picture.getEXIF().setFNumber(result.getDouble("exif_fnumber"));
-                picture.getEXIF().setExposureTime(result.getDouble("exif_exposuretime"));
-                picture.getEXIF().setISOValue(result.getDouble("exif_isovalue"));
-                picture.getEXIF().setFlash(result.getBoolean("exif_flash"));
-
-                picture.setCamera(getCamera(result.getInt("camera_id")));
+                picture = makePictureModel(result);
             } else {
                 // no picture of this id was found
-                System.out.println("No picture of this id " + id + " was found.");
             }
             result.close();
         } catch (SQLException e) {
@@ -232,6 +210,31 @@ public class SQLiteDAL implements DataAccessLayer {
                 statement.close();
             }
         }
+        return picture;
+    }
+
+    private PictureModel makePictureModel(ResultSet result) throws SQLException {
+        PictureModel picture = new Picture();
+        
+        picture.setID(result.getInt("id"));
+        picture.setFileName(result.getString("filename"));
+        picture.setIPTC(new IPTC());
+        
+        picture.getIPTC().setCaption(result.getString("iptc_caption"));
+        picture.getIPTC().setHeadline(result.getString("iptc_headline"));
+        picture.getIPTC().setKeywords(result.getString("iptc_keywords"));
+        picture.getIPTC().setByLine(result.getString("iptc_byline"));
+        picture.getIPTC().setCopyrightNotice(result.getString("iptc_copyrightnotice"));
+        
+        picture.setEXIF(new EXIF());
+        picture.getEXIF().setMake(result.getString("exif_make"));
+        picture.getEXIF().setFNumber(result.getDouble("exif_fnumber"));
+        picture.getEXIF().setExposureTime(result.getDouble("exif_exposuretime"));
+        picture.getEXIF().setISOValue(result.getDouble("exif_isovalue"));
+        picture.getEXIF().setFlash(result.getBoolean("exif_flash"));
+        
+        picture.setCamera(getCamera(result.getInt("camera_id")));
+        
         return picture;
     }
 
@@ -291,11 +294,18 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public void deletePicture(int id) throws Exception {
-        Statement statement = connection.createStatement();
-        final String sql = "DELETE FROM pictures WHERE id=" + id;
-        statement.executeUpdate(sql);
-        statement.close();
-        closeDBConnection();
+        final String string = "DELETE FROM pictures WHERE id = " + id;
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(string);
+            statement.executeUpdate();
+        } catch (SQLException e){
+           System.err.println(e.getClass().getName() + ": " + e.getMessage()); 
+        } finally {
+            if (statement != null){
+                statement.close();
+            }
+        }
     }
 
     /**
