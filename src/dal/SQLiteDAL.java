@@ -7,6 +7,7 @@ import BIF.SWE2.interfaces.models.IPTCModel;
 import BIF.SWE2.interfaces.models.PhotographerModel;
 import BIF.SWE2.interfaces.models.PictureModel;
 import helpers.Helpers;
+import static helpers.Helpers.*;
 import models.*;
 
 import java.sql.*;
@@ -60,7 +61,7 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     private void setupDatabase() {
         try (Statement statement = connection.createStatement()) {
-            // Setting up table 'pictures'
+
             final String sqlPictures = "CREATE TABLE IF NOT EXISTS pictures\n"
                     + "(\n"
                     + "    id INTEGER PRIMARY KEY,\n"
@@ -79,7 +80,7 @@ public class SQLiteDAL implements DataAccessLayer {
                     + "    exif_exposureprogram INT\n"
                     + ")";
             statement.executeUpdate(sqlPictures);
-            // Setting up table 'cameras'
+
             final String sqlCameras = "CREATE TABLE IF NOT EXISTS cameras\n"
                     + "(\n"
                     + "    id INTEGER PRIMARY KEY,\n"
@@ -91,7 +92,7 @@ public class SQLiteDAL implements DataAccessLayer {
                     + "    iso_limit_acceptable DOUBLE\n"
                     + ")";
             statement.executeUpdate(sqlCameras);
-            // Setting up table 'photographers'
+
             final String sqlPhotographers = "CREATE TABLE IF NOT EXISTS photographers\n"
                     + "(\n"
                     + "    id INTEGER PRIMARY KEY,\n"
@@ -101,31 +102,26 @@ public class SQLiteDAL implements DataAccessLayer {
                     + "    notes VARCHAR(512)\n"
                     + ")";
             statement.executeUpdate(sqlPhotographers);
+            
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-
     }
 
     public boolean containsRowForTable(int id, DBTable table) {
         PreparedStatement statement = null;
         String string = "SELECT id FROM " + table + " WHERE id = ?";
+        ResultSet result = null;
         try {
             statement = connection.prepareStatement(string);
             statement.setInt(1, id);
-            ResultSet result = statement.executeQuery();
-
+            result = statement.executeQuery();
             return result.next();
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
+            closeResultSilently(result);
+            closeStatementSilently(statement);
         }
         return false;
     }
@@ -175,16 +171,8 @@ public class SQLiteDAL implements DataAccessLayer {
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            try {
-                if (result != null) {
-                    result.close();
-                }
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
+            closeResultSilently(result);
+            closeStatementSilently(statement);
         }
         return o;
     }
@@ -194,10 +182,9 @@ public class SQLiteDAL implements DataAccessLayer {
      *
      * @param id the id of the photographer that is being searched
      * @return the PhotographerModel with the given id.
-     * @throws java.lang.Exception
      */
     @Override
-    public PhotographerModel getPhotographer(int id) throws Exception {
+    public PhotographerModel getPhotographer(int id) {
         return (Photographer) getObjectFrom(id, DBTable.PHOTOGRAPHERS);
     }
 
@@ -206,7 +193,7 @@ public class SQLiteDAL implements DataAccessLayer {
         photographer.setID(rs.getInt("id"));
         photographer.setFirstName(rs.getString("first_name"));
         photographer.setLastName(rs.getString("last_name"));
-        photographer.setBirthDay(Helpers.toLocalDate(rs.getLong("birthday")));
+        photographer.setBirthDay(toLocalDate(rs.getLong("birthday")));
         photographer.setNotes(rs.getString("notes"));
         return photographer;
     }
@@ -235,15 +222,14 @@ public class SQLiteDAL implements DataAccessLayer {
      * Saves all changes to the database.
      *
      * @param picture the PictureModel object which should be saved to the database
-     * @throws java.lang.Exception
      */
     @Override
-    public void save(PictureModel picture) throws Exception {
-        // check if the picture already exists
+    public void save(PictureModel picture) {
+        PreparedStatement statement = null;
+
         if (!containsRowForTable(picture.getID(), DBTable.PICTURES)) {
             addRowToTable(picture.getID(), DBTable.PICTURES);
         }
-        // update the database
         final String string = "UPDATE pictures SET "
                 + "filename=?,"
                 + "iptc_caption=?,"
@@ -259,23 +245,28 @@ public class SQLiteDAL implements DataAccessLayer {
                 + "exif_exposureprogram=?,"
                 + "camera_id=?"
                 + " WHERE ID=" + picture.getID();
-
-        PreparedStatement updateStatement = connection.prepareStatement(string);
-        updateStatement.setString(1, picture.getFileName());
-        updateStatement.setString(2, picture.getIPTC().getCaption());
-        updateStatement.setString(3, picture.getIPTC().getHeadline());
-        updateStatement.setString(4, picture.getIPTC().getKeywords());
-        updateStatement.setString(5, picture.getIPTC().getByLine());
-        updateStatement.setString(6, picture.getIPTC().getCopyrightNotice());
-        updateStatement.setString(7, picture.getEXIF().getMake());
-        updateStatement.setDouble(8, picture.getEXIF().getFNumber());
-        updateStatement.setDouble(9, picture.getEXIF().getExposureTime());
-        updateStatement.setDouble(10, picture.getEXIF().getISOValue());
-        updateStatement.setBoolean(11, picture.getEXIF().getFlash());
-        updateStatement.setInt(12, picture.getEXIF().getExposureProgram().getValue());
-        updateStatement.setInt(13, picture.getCamera().getID());
-        updateStatement.executeUpdate();
-        updateStatement.close();
+        try {
+            statement = connection.prepareStatement(string);
+            statement.setString(1, picture.getFileName());
+            statement.setString(2, picture.getIPTC().getCaption());
+            statement.setString(3, picture.getIPTC().getHeadline());
+            statement.setString(4, picture.getIPTC().getKeywords());
+            statement.setString(5, picture.getIPTC().getByLine());
+            statement.setString(6, picture.getIPTC().getCopyrightNotice());
+            statement.setString(7, picture.getEXIF().getMake());
+            statement.setDouble(8, picture.getEXIF().getFNumber());
+            statement.setDouble(9, picture.getEXIF().getExposureTime());
+            statement.setDouble(10, picture.getEXIF().getISOValue());
+            statement.setBoolean(11, picture.getEXIF().getFlash());
+            statement.setInt(12, picture.getEXIF().getExposureProgram().getValue());
+            statement.setInt(13, picture.getCamera().getID());
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            closeStatementSilently(statement);
+        }
     }
 
     /**
@@ -298,13 +289,7 @@ public class SQLiteDAL implements DataAccessLayer {
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
+            closeStatementSilently(statement);
         }
     }
 
@@ -329,7 +314,7 @@ public class SQLiteDAL implements DataAccessLayer {
      * @return a Collection of PictureModel objects which match the filter criteria
      */
     @Override
-    public Collection<PictureModel> getPictures(String namePart, PhotographerModel photographerParts, IPTCModel iptcParts, EXIFModel exifParts) throws Exception {
+    public Collection<PictureModel> getPictures(String namePart, PhotographerModel photographerParts, IPTCModel iptcParts, EXIFModel exifParts) {
         // TODO: implement search
         Collection<PictureModel> pictureModels = new ArrayList<>();
         getObjectsFrom(DBTable.PICTURES).forEach((o) -> {
@@ -357,35 +342,36 @@ public class SQLiteDAL implements DataAccessLayer {
      * Saves all changes of the given PhotographerModel instance to the database.
      *
      * @param photographer the PhotographerModel instance whose member information should be stored
-     * @throws java.lang.Exception
      */
     @Override
-    public void save(PhotographerModel photographer) throws Exception {
-        // check if the photographer already exists
-        if (getPhotographer(photographer.getID()) == null) {
-            Statement insertStatement = connection.createStatement();
-            final String insertSQL = "INSERT INTO photographers (id) VALUES (" + photographer.getID() + ")";
-            insertStatement.executeUpdate(insertSQL);
-            insertStatement.close();
+    public void save(PhotographerModel photographer) {
+        PreparedStatement statement = null;
+
+        if (!containsRowForTable(photographer.getID(), DBTable.PHOTOGRAPHERS)) {
+            addRowToTable(photographer.getID(), DBTable.PHOTOGRAPHERS);
         }
-        // update the database
-        final String updateSQL = "UPDATE photographers SET "
-                + "first_name=?,"
-                + "last_name=?,"
-                + "birthday=?,"
-                + "notes=?"
-                + " WHERE id=" + photographer.getID();
-        PreparedStatement updateStatement = connection.prepareStatement(updateSQL);
-        updateStatement.setString(1, photographer.getFirstName());
-        updateStatement.setString(2, photographer.getLastName());
-        updateStatement.setDate(3, Date.valueOf(photographer.getBirthDay()));
-        updateStatement.setString(4, photographer.getNotes());
-        updateStatement.executeUpdate();
-        updateStatement.close();
+        final String string = "UPDATE photographers SET "
+                + "first_name = ?,"
+                + "last_name = ?,"
+                + "birthday = ?,"
+                + "notes = ? "
+                + "WHERE id = " + photographer.getID();
+        try {
+            statement = connection.prepareStatement(string);
+            statement.setString(1, photographer.getFirstName());
+            statement.setString(2, photographer.getLastName());
+            statement.setLong(3, toLong(photographer.getBirthDay()));
+            statement.setString(4, photographer.getNotes());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            closeStatementSilently(statement);
+        }
     }
 
     public ArrayList<Object> getObjectsFrom(DBTable table) {
-        ArrayList<Object> objects = new ArrayList<Object>();
+        ArrayList<Object> objects = new ArrayList<>();
         final String string = "SELECT * FROM " + table;
         PreparedStatement statement = null;
         ResultSet result = null;
@@ -410,16 +396,8 @@ public class SQLiteDAL implements DataAccessLayer {
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            try {
-                if (result != null) {
-                    result.close();
-                }
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
+            closeResultSilently(result);
+            closeStatementSilently(statement);
         }
         return objects;
     }
@@ -454,7 +432,7 @@ public class SQLiteDAL implements DataAccessLayer {
         camera.setID(rs.getInt("id"));
         camera.setProducer(rs.getString("producer"));
         camera.setMake(rs.getString("make"));
-        camera.setBoughtOn(Helpers.toLocalDate(rs.getLong("bought_on")));
+        camera.setBoughtOn(toLocalDate(rs.getLong("bought_on")));
         camera.setNotes(rs.getString("notes"));
         camera.setISOLimitAcceptable(rs.getDouble("iso_limit_acceptable"));
         camera.setISOLimitGood(rs.getDouble("iso_limit_good"));
@@ -462,7 +440,7 @@ public class SQLiteDAL implements DataAccessLayer {
     }
 
     private void addRowToTable(int id, DBTable table) {
-        PreparedStatement statement;
+        PreparedStatement statement = null;
         String string = "INSERT INTO " + table + " (id) VALUES (" + id + ")";
         try {
             statement = connection.prepareStatement(string);
@@ -470,7 +448,7 @@ public class SQLiteDAL implements DataAccessLayer {
         } catch (SQLException s) {
             System.err.println(s.getClass().getName() + ": " + s.getMessage());
         } finally {
-
+            closeStatementSilently(statement);
         }
     }
 }

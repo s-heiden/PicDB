@@ -1,14 +1,11 @@
 package dal;
 
 import BIF.SWE2.interfaces.models.CameraModel;
-import BIF.SWE2.interfaces.models.EXIFModel;
-import BIF.SWE2.interfaces.models.IPTCModel;
 import BIF.SWE2.interfaces.models.PhotographerModel;
 import BIF.SWE2.interfaces.models.PictureModel;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Random;
 import models.Camera;
 import models.EXIF;
@@ -31,7 +28,6 @@ public class SQLiteDALTest {
 
     @AfterClass
     public static void tearDownClass() {
-
     }
 
     public void test_has_picture(int id) throws SQLException {
@@ -68,9 +64,20 @@ public class SQLiteDALTest {
 
         picture.setFileName("C:\\imgs\\img_0001.jpg");
         picture.setCamera(new Camera(1, "Sony", "X-301", LocalDate.now(), "Inter Arma Enim Silent Leges", 3.1, 4.7));
-        picture.setEXIF(new EXIF("Sony", 34.1, 12.1, 400, true));
-        picture.setIPTC(new IPTC("Example Caption", "Example Headline", "A, number, of, keywords", "John Photographer", "(c) 2017"));
-
+        picture.setEXIF(new EXIF(
+                "Sony", 
+                34.1, 
+                12.1, 
+                400, 
+                true
+        ));
+        picture.setIPTC(new IPTC(
+                "Example Caption", 
+                "Example Headline", 
+                "A, number, of, keywords", 
+                "John Photographer", 
+                "(c) 2017"
+        ));
         dal.save(picture);
         assertEquals(true, dal.containsRowForTable(testID, DBTable.PICTURES));
         dal.deletePicture(testID);
@@ -96,16 +103,17 @@ public class SQLiteDALTest {
 
         SQLiteDAL dal = new SQLiteDAL();
         PhotographerModel p = new Photographer();
-        int testID = 1234;
+        int testID = new Random().nextInt(Integer.MAX_VALUE);
 
         p.setID(testID);
         p.setBirthDay(LocalDate.now());
-        p.setFirstName("First Name");
-        p.setLastName("Last Name");
+        p.setFirstName("Temporary");
+        p.setLastName("Photographer");
         p.setNotes("Notes, notes");
 
         dal.save(p);
         assertEquals(true, dal.containsRowForTable(testID, DBTable.PHOTOGRAPHERS));
+        System.out.println((dal.getPhotographer(testID)));     
         dal.deletePhotographer(testID);
         assertEquals(false, dal.containsRowForTable(testID, DBTable.PHOTOGRAPHERS));
     }
@@ -141,9 +149,9 @@ public class SQLiteDALTest {
 
         SQLiteDAL dal = new SQLiteDAL();
         Collection<CameraModel> d = dal.getCameras();
-        for (CameraModel c : d) {
+        d.forEach((c) -> {
             System.out.println(c);
-        }
+        });
         assertNotNull(d);
     }
 
@@ -154,12 +162,12 @@ public class SQLiteDALTest {
 
         SQLiteDAL dal = new SQLiteDAL();
         Collection<PhotographerModel> d = dal.getPhotographers();
-        for (PhotographerModel c : d) {
+        d.forEach((c) -> {
             System.out.println(c);
-        }
+        });
         assertNotNull(d);
     }
-    
+        
     @Test
     public void test_get_pictures_without_search() throws Exception {
         System.out.println(new Object() {
@@ -167,10 +175,9 @@ public class SQLiteDALTest {
 
         SQLiteDAL dal = new SQLiteDAL();
         Collection<PictureModel> d = dal.getPictures(null, null, null, null);
-        for (PictureModel c : d) {
+        d.forEach((c) -> {
             System.out.println(c);
-        }
+        });
         assertNotNull(d);
     }
-
 }
