@@ -1,5 +1,7 @@
-package dal;
+package DAL;
 
+import DAL.SQLiteDAL;
+import DAL.DBTable;
 import BIF.SWE2.interfaces.models.CameraModel;
 import BIF.SWE2.interfaces.models.PhotographerModel;
 import BIF.SWE2.interfaces.models.PictureModel;
@@ -7,11 +9,11 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Random;
-import models.Camera;
-import models.EXIF;
-import models.IPTC;
-import models.Photographer;
-import models.Picture;
+import Models.Camera;
+import Models.EXIF;
+import Models.IPTC;
+import Models.Photographer;
+import Models.Picture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,23 +32,17 @@ public class SQLiteDALTest {
     public static void tearDownClass() {
     }
 
-    public void test_has_picture(int id) throws SQLException {
-        System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+    public void test_has_picture(int id) throws SQLException {      
         SQLiteDAL dal = new SQLiteDAL();
         assertEquals(true, dal.containsRowForTable(id, DBTable.PICTURES));
     }
 
-    public void test_has_camera(int id) throws SQLException {
-        System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+    public void test_has_camera(int id) throws SQLException {       
         SQLiteDAL dal = new SQLiteDAL();
         assertEquals(true, dal.containsRowForTable(id, DBTable.CAMERAS));
     }
 
     public void test_has_photographer(int id) throws SQLException {
-        System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
         SQLiteDAL dal = new SQLiteDAL();
         assertEquals(true, dal.containsRowForTable(id, DBTable.PHOTOGRAPHERS));
     }
@@ -90,10 +86,18 @@ public class SQLiteDALTest {
         }.getClass().getEnclosingMethod().getName());
 
         SQLiteDAL dal = new SQLiteDAL();
-        int ID = 1;
-        PictureModel p = dal.getPicture(ID);
+        int testID = 1234;
+        PictureModel picture = new Picture();
+        picture.setID(testID);
+
+        picture.setFileName("C:\\imgs\\img_0001.jpg");
+        picture.setCamera(null);
+        picture.setEXIF(null);
+        dal.save(picture);    
+        
+        PictureModel p = dal.getPicture(1234);
         System.out.println(p);
-        assertEquals(p.getID(), ID);
+        assertEquals(p.getID(), 1234);
     }
 
     @Test
@@ -179,5 +183,14 @@ public class SQLiteDALTest {
             System.out.println(c);
         });
         assertNotNull(d);
+    }
+    
+    @Test
+    public void test_next_id_for() throws Exception {
+        System.out.println(new Object() {
+        }.getClass().getEnclosingMethod().getName());
+
+        SQLiteDAL dal = new SQLiteDAL();
+        System.out.println("Next ID for Photographers: " + dal.nextIdFor(DBTable.PHOTOGRAPHERS));
     }
 }

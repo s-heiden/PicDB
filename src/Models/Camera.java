@@ -1,4 +1,4 @@
-package models;
+package Models;
 
 import BIF.SWE2.interfaces.models.CameraModel;
 
@@ -8,7 +8,7 @@ import java.time.LocalDate;
  * Camera Model.
  */
 public class Camera implements CameraModel {
-    private int id;
+    private int id = -1;
     private String producer;
     private String make;
     private LocalDate boughtOn;
@@ -20,7 +20,7 @@ public class Camera implements CameraModel {
     }    
     
     /**
-     * Custom Ctor
+     * Constructor which sets all member variables.
      * @param id
      * @param producer
      * @param make

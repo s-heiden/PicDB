@@ -1,14 +1,17 @@
-package dal;
+package DAL;
 
+import Models.Photographer;
+import Models.Picture;
+import Models.EXIF;
+import Models.IPTC;
+import Models.Camera;
 import BIF.SWE2.interfaces.*;
 import BIF.SWE2.interfaces.models.CameraModel;
 import BIF.SWE2.interfaces.models.EXIFModel;
 import BIF.SWE2.interfaces.models.IPTCModel;
 import BIF.SWE2.interfaces.models.PhotographerModel;
 import BIF.SWE2.interfaces.models.PictureModel;
-import helpers.Helpers;
 import static helpers.Helpers.*;
-import models.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -102,7 +105,7 @@ public class SQLiteDAL implements DataAccessLayer {
                     + "    notes VARCHAR(512)\n"
                     + ")";
             statement.executeUpdate(sqlPhotographers);
-            
+
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
@@ -134,7 +137,7 @@ public class SQLiteDAL implements DataAccessLayer {
      * @throws java.lang.Exception
      */
     @Override
-    public PictureModel getPicture(int id) throws Exception {
+    public PictureModel getPicture(int id) {
         return (Picture) getObjectFrom(id, DBTable.PICTURES);
     }
 
@@ -167,7 +170,6 @@ public class SQLiteDAL implements DataAccessLayer {
             } else {
                 // no row of this id was found
             }
-            result.close();
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
@@ -227,39 +229,47 @@ public class SQLiteDAL implements DataAccessLayer {
     public void save(PictureModel picture) {
         PreparedStatement statement = null;
 
-        if (!containsRowForTable(picture.getID(), DBTable.PICTURES)) {
+        if (!containsRowForTable(picture.getID(), DBTable.PICTURES)) {      
             addRowToTable(picture.getID(), DBTable.PICTURES);
         }
         final String string = "UPDATE pictures SET "
-                + "filename=?,"
-                + "iptc_caption=?,"
-                + "iptc_headline=?,"
-                + "iptc_keywords=?,"
-                + "iptc_byline=?,"
-                + "iptc_copyrightnotice=?,"
-                + "exif_make=?,"
-                + "exif_fnumber=?,"
-                + "exif_exposuretime=?,"
-                + "exif_isovalue=?,"
-                + "exif_flash=?,"
-                + "exif_exposureprogram=?,"
-                + "camera_id=?"
-                + " WHERE ID=" + picture.getID();
+                + "filename = ?,"
+                + "iptc_caption = ?,"
+                + "iptc_headline = ?,"
+                + "iptc_keywords = ?,"
+                + "iptc_byline = ?,"
+                + "iptc_copyrightnotice = ?,"
+                + "exif_make = ?,"
+                + "exif_fnumber = ?,"
+                + "exif_exposuretime = ?,"
+                + "exif_isovalue = ?,"
+                + "exif_flash = ?,"
+                + "exif_exposureprogram = ?,"
+                + "camera_id = ? WHERE id = " + picture.getID();
         try {
             statement = connection.prepareStatement(string);
             statement.setString(1, picture.getFileName());
-            statement.setString(2, picture.getIPTC().getCaption());
-            statement.setString(3, picture.getIPTC().getHeadline());
-            statement.setString(4, picture.getIPTC().getKeywords());
-            statement.setString(5, picture.getIPTC().getByLine());
-            statement.setString(6, picture.getIPTC().getCopyrightNotice());
-            statement.setString(7, picture.getEXIF().getMake());
-            statement.setDouble(8, picture.getEXIF().getFNumber());
-            statement.setDouble(9, picture.getEXIF().getExposureTime());
-            statement.setDouble(10, picture.getEXIF().getISOValue());
-            statement.setBoolean(11, picture.getEXIF().getFlash());
-            statement.setInt(12, picture.getEXIF().getExposureProgram().getValue());
-            statement.setInt(13, picture.getCamera().getID());
+            
+//            if(picture.getIPTC() != null) {
+                System.out.println("picture.getIPTC(): " + picture.getIPTC());
+                statement.setString(2, picture.getIPTC().getCaption());
+                statement.setString(3, picture.getIPTC().getHeadline());
+                statement.setString(4, picture.getIPTC().getKeywords());
+                statement.setString(5, picture.getIPTC().getByLine());
+                statement.setString(6, picture.getIPTC().getCopyrightNotice());
+//            }
+//            if(picture.getEXIF() != null) {
+                System.out.println("picture.getEXIF(): " + picture.getEXIF());
+                statement.setString(7, picture.getEXIF().getMake());
+                statement.setDouble(8, picture.getEXIF().getFNumber());
+                statement.setDouble(9, picture.getEXIF().getExposureTime());
+                statement.setDouble(10, picture.getEXIF().getISOValue());
+                statement.setBoolean(11, picture.getEXIF().getFlash());
+                statement.setInt(12, picture.getEXIF().getExposureProgram().getValue());
+//            }
+//            if(picture.getCamera() != null) {
+                statement.setInt(13, picture.getCamera().getID());
+//            }
             statement.executeUpdate();
             statement.close();
         } catch (SQLException e) {
@@ -297,10 +307,9 @@ public class SQLiteDAL implements DataAccessLayer {
      * Deletes a Photographer. An exception is thrown if a photographer is still linked to a picture.
      *
      * @param id the photographer which should to be deleted
-     * @throws java.lang.Exception
      */
     @Override
-    public void deletePhotographer(int id) throws Exception {
+    public void deletePhotographer(int id) {
         deleteRowFromTable(id, DBTable.PHOTOGRAPHERS);
     }
 
@@ -316,7 +325,7 @@ public class SQLiteDAL implements DataAccessLayer {
     @Override
     public Collection<PictureModel> getPictures(String namePart, PhotographerModel photographerParts, IPTCModel iptcParts, EXIFModel exifParts) {
         // TODO: implement search
-        Collection<PictureModel> pictureModels = new ArrayList<>();
+        Collection<PictureModel> pictureModels = new ArrayList<>();        
         getObjectsFrom(DBTable.PICTURES).forEach((o) -> {
             pictureModels.add((PictureModel) o);
         });
@@ -327,10 +336,9 @@ public class SQLiteDAL implements DataAccessLayer {
      * Returns a collection of all photographers.
      *
      * @return collection of all photographers
-     * @throws java.lang.Exception
      */
     @Override
-    public Collection<PhotographerModel> getPhotographers() throws Exception {
+    public Collection<PhotographerModel> getPhotographers() {
         Collection<PhotographerModel> cameraModels = new ArrayList<>();
         getObjectsFrom(DBTable.PHOTOGRAPHERS).forEach((o) -> {
             cameraModels.add((PhotographerModel) o);
@@ -445,10 +453,31 @@ public class SQLiteDAL implements DataAccessLayer {
         try {
             statement = connection.prepareStatement(string);
             statement.executeUpdate();
-        } catch (SQLException s) {
-            System.err.println(s.getClass().getName() + ": " + s.getMessage());
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             closeStatementSilently(statement);
         }
+    }
+    
+    public int nextIdFor(DBTable table){
+        int id = 1;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        String string = "SELECT MAX(id) + 1 AS next_id FROM " + table;
+        
+        try {
+            statement = connection.prepareStatement(string);
+            result = statement.executeQuery();
+            if (result.next()) {
+                id = result.getInt("next_id");
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            closeResultSilently(result);
+            closeStatementSilently(statement);
+        }        
+        return id;
     }
 }

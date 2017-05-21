@@ -1,4 +1,4 @@
-package dal;
+package DAL;
 
 public enum DBTable {
     PICTURES, PHOTOGRAPHERS, CAMERAS;

@@ -1,4 +1,4 @@
-package models;
+package Models;
 
 import BIF.SWE2.interfaces.models.*;
 
