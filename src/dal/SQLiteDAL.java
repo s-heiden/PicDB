@@ -14,37 +14,6 @@ import java.util.Collection;
 
 public class SQLiteDAL implements DataAccessLayer {
 
-    public enum TableNames {
-        PICTURES, PHOTOGRAPHERS, CAMERAS;
-
-        static public boolean contains(String value) {
-            if (value == null) {
-                return false;
-            }
-            try {
-                valueOf(value.toUpperCase());
-                return true;
-            } catch (IllegalArgumentException e) {
-                return false;
-            }
-        }
-
-        @Override
-        public final String toString() {
-            switch (this) {
-                case PICTURES:
-                    return "pictures";
-                case PHOTOGRAPHERS:
-                    return "photographers";
-                case CAMERAS:
-                    return "cameras";
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-
-    }
-
     private static final String DATABASE_URL = "jdbc:sqlite:picdb.db";
     private static final String SQLITE_JDBC = "org.sqlite.JDBC";
 
@@ -139,31 +108,27 @@ public class SQLiteDAL implements DataAccessLayer {
 
     }
 
-    public boolean containsRowForTable(int id, String table) {
-        if (TableNames.contains(table)) {
-            PreparedStatement statement = null;
-            String string = "SELECT id FROM " + table + " WHERE id = ?";
-            try {
-                statement = connection.prepareStatement(string);
-                statement.setInt(1, id);
-                ResultSet result = statement.executeQuery();
+    public boolean containsRowForTable(int id, DBTable table) {
+        PreparedStatement statement = null;
+        String string = "SELECT id FROM " + table + " WHERE id = ?";
+        try {
+            statement = connection.prepareStatement(string);
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
 
-                return result.next();
+            return result.next();
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
             } catch (SQLException e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            } finally {
-                try {
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
             }
-            return false;
-        } else {
-            throw new IllegalArgumentException("Table '" + table + "' unknown.");
         }
+        return false;
     }
 
     /**
@@ -175,57 +140,45 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public PictureModel getPicture(int id) throws Exception {
-
-
-        return (Picture) getObjectFromTable(id, "pictures");
+        return (Picture) getObjectFromTable(id, DBTable.PICTURES);
     }
 
-    private Object getObjectFromTable(int id, String table) {
+    private Object getObjectFromTable(int id, DBTable table) {
         Object o = null;
-        if (TableNames.contains(table)) {
-            PreparedStatement statement = null;
-            ResultSet result = null;
-            String string = "SELECT * FROM " + table + " WHERE id = ?";
 
-            if (TableNames.PICTURES.toString().equals(table)) {
-                o = new Picture();
-            } else if (TableNames.PHOTOGRAPHERS.toString().equals(table)) {
-                o = new Photographer();
-            } else {
-                o = new Camera();
-            }
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        String string = "SELECT * FROM " + table + " WHERE id = ?";
 
-            try {
-                statement = connection.prepareStatement(string);
-                statement.setInt(1, id);
-                result = statement.executeQuery();
+        try {
+            statement = connection.prepareStatement(string);
+            statement.setInt(1, id);
+            result = statement.executeQuery();
 
-                if (result.next()) {
-                    if (TableNames.PICTURES.toString().equals(table)) {
-                        o = makePictureModel(result);
-                    } else if (TableNames.PHOTOGRAPHERS.toString().equals(table)) {
-                        // o = makePhotographerModel(result);
-                    } else {
-                        // o = makeCameraModel(result);
-                    }
-
-                } else {
-                    // no picture of this id was found
+            if (result.next()) {
+                if (table == DBTable.PICTURES) {
+                    o = makePictureModel(result);
+                } else if (table == DBTable.PHOTOGRAPHERS) {
+                    // o = makePhotographerModel(result);
+                } else if (table == DBTable.CAMERAS) {
+                    // o = makeCameraModel(result);
                 }
-                result.close();
+            } else {
+                // no row of this id was found
+            }
+            result.close();
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
             } catch (SQLException e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            } finally {
-                try {
-                    if (result != null) {
-                        result.close();
-                    }
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
             }
         }
         return o;
@@ -298,8 +251,8 @@ public class SQLiteDAL implements DataAccessLayer {
     @Override
     public void save(PictureModel picture) throws Exception {
         // check if the picture already exists
-        if (!containsRowForTable(picture.getID(), TableNames.PICTURES.toString())) {
-            addRowToTable(picture.getID(), "pictures");
+        if (!containsRowForTable(picture.getID(), DBTable.PICTURES)) {
+            addRowToTable(picture.getID(), DBTable.PICTURES);
         }
         // update the database
         final String string = "UPDATE pictures SET "
@@ -344,29 +297,25 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public void deletePicture(int id) throws Exception {
-        deleteRowFromTable(id, "pictures");
+        deleteRowFromTable(id, DBTable.PICTURES);
     }
 
-    private void deleteRowFromTable(int id, String table) {
-        if (TableNames.contains(table)) {
-            final String string = "DELETE FROM " + table + " WHERE id = " + id;
-            PreparedStatement statement = null;
+    private void deleteRowFromTable(int id, DBTable table) {
+        final String string = "DELETE FROM " + table + " WHERE id = " + id;
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(string);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
             try {
-                statement = connection.prepareStatement(string);
-                statement.executeUpdate();
+                if (statement != null) {
+                    statement.close();
+                }
             } catch (SQLException e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            } finally {
-                try {
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
             }
-        } else {
-            throw new IllegalArgumentException("Table '" + table + "' unknown.");
         }
     }
 
@@ -378,7 +327,7 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public void deletePhotographer(int id) throws Exception {
-        deleteRowFromTable(id, "photographers");
+        deleteRowFromTable(id, DBTable.PHOTOGRAPHERS);
     }
 
     /**
@@ -524,22 +473,18 @@ public class SQLiteDAL implements DataAccessLayer {
         return camera;
     }
 
-    private void addRowToTable(int id, String table) {
-        if (TableNames.contains(table)) {
-            PreparedStatement statement;
+    private void addRowToTable(int id, DBTable table) {
+        PreparedStatement statement;
 
-            String string = "INSERT INTO " + table + " (id) VALUES (" + id + ")";
+        String string = "INSERT INTO " + table + " (id) VALUES (" + id + ")";
 
-            try {
-                statement = connection.prepareStatement(string);
-                statement.executeUpdate();
-            } catch (SQLException s) {
-                System.err.println(s.getClass().getName() + ": " + s.getMessage());
-            } finally {
+        try {
+            statement = connection.prepareStatement(string);
+            statement.executeUpdate();
+        } catch (SQLException s) {
+            System.err.println(s.getClass().getName() + ": " + s.getMessage());
+        } finally {
 
-            }
-        } else {
-            throw new IllegalArgumentException("Table '" + table + "' unknown.");
         }
     }
 

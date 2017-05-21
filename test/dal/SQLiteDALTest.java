@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+
 public class SQLiteDALTest {
     
     public SQLiteDALTest() {
@@ -37,7 +38,7 @@ public class SQLiteDALTest {
                 + "containsPicture\n"
                 + "===============");
         SQLiteDAL dal = new SQLiteDAL();
-        assertEquals(true, dal.containsRowForTable(id, SQLiteDAL.TableNames.PICTURES.toString()));
+        assertEquals(true, dal.containsRowForTable(id, DBTable.PICTURES));
     }
     
     @Test
@@ -57,9 +58,9 @@ public class SQLiteDALTest {
         picture.setIPTC(new IPTC("Example Caption", "Example Headline", "A, number, of, keywords", "John Photographer", "(c) 2017"));
            
         dal.save(picture);
-        assertEquals(true, dal.containsRowForTable(testID, SQLiteDAL.TableNames.PICTURES.toString()));
+        assertEquals(true, dal.containsRowForTable(testID, DBTable.PICTURES));
         dal.deletePicture(testID);
-        assertEquals(false, dal.containsRowForTable(testID, SQLiteDAL.TableNames.PICTURES.toString())); 
+        assertEquals(false, dal.containsRowForTable(testID, DBTable.PICTURES)); 
         
     }
     
