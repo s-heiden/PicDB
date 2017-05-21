@@ -6,6 +6,7 @@ import BIF.SWE2.interfaces.models.EXIFModel;
 import BIF.SWE2.interfaces.models.IPTCModel;
 import BIF.SWE2.interfaces.models.PhotographerModel;
 import BIF.SWE2.interfaces.models.PictureModel;
+import helpers.Helpers;
 import models.*;
 
 import java.sql.*;
@@ -16,7 +17,6 @@ public class SQLiteDAL implements DataAccessLayer {
 
     private static final String DATABASE_URL = "jdbc:sqlite:picdb.db";
     private static final String SQLITE_JDBC = "org.sqlite.JDBC";
-
     private Connection connection;
 
     /**
@@ -35,7 +35,6 @@ public class SQLiteDAL implements DataAccessLayer {
             try {
                 Class.forName(SQLITE_JDBC);
                 connection = DriverManager.getConnection(DATABASE_URL);
-                System.out.println("DB open");
             } catch (SQLException | ClassNotFoundException s) {
                 System.err.println(s.getClass().getName() + ": " + s.getMessage());
             }
@@ -86,7 +85,7 @@ public class SQLiteDAL implements DataAccessLayer {
                     + "    id INTEGER PRIMARY KEY,\n"
                     + "    producer VARCHAR(256),\n"
                     + "    make VARCHAR(256),\n"
-                    + "    bought_on DATE,\n"
+                    + "    bought_on LONG,\n"
                     + "    notes VARCHAR(512),\n"
                     + "    iso_limit_good DOUBLE,\n"
                     + "    iso_limit_acceptable DOUBLE\n"
@@ -98,7 +97,7 @@ public class SQLiteDAL implements DataAccessLayer {
                     + "    id INTEGER PRIMARY KEY,\n"
                     + "    first_name VARCHAR(256),\n"
                     + "    last_name VARCHAR(256),\n"
-                    + "    birthday DATE,\n"
+                    + "    birthday LONG,\n"
                     + "    notes VARCHAR(512)\n"
                     + ")";
             statement.executeUpdate(sqlPhotographers);
@@ -140,10 +139,10 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public PictureModel getPicture(int id) throws Exception {
-        return (Picture) getObjectFromTable(id, DBTable.PICTURES);
+        return (Picture) getObjectFrom(id, DBTable.PICTURES);
     }
 
-    private Object getObjectFromTable(int id, DBTable table) {
+    private Object getObjectFrom(int id, DBTable table) {
         Object o = null;
 
         PreparedStatement statement = null;
@@ -156,12 +155,18 @@ public class SQLiteDAL implements DataAccessLayer {
             result = statement.executeQuery();
 
             if (result.next()) {
-                if (table == DBTable.PICTURES) {
-                    o = makePictureModel(result);
-                } else if (table == DBTable.PHOTOGRAPHERS) {
-                    // o = makePhotographerModel(result);
-                } else if (table == DBTable.CAMERAS) {
-                    // o = makeCameraModel(result);
+                if (null != table) {
+                    switch (table) {
+                        case PICTURES:
+                            o = toPictureObject(result);
+                            break;
+                        case PHOTOGRAPHERS:
+                            o = toPhotographerObject(result);
+                            break;
+                        case CAMERAS:
+                            o = toCameraObject(result);
+                            break;
+                    }
                 }
             } else {
                 // no row of this id was found
@@ -193,52 +198,36 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public PhotographerModel getPhotographer(int id) throws Exception {
-        PhotographerModel photographer = null;
-        /*
-     
-        PreparedStatement statement = null;
-        ResultSet rs = null;
-        String string = "SELECT * FROM photographers WHERE id = ?";
-         */
+        return (Photographer) getObjectFrom(id, DBTable.PHOTOGRAPHERS);
+    }
 
-        Statement statement = connection.createStatement();
-        String sql = "SELECT * FROM photographers WHERE id=" + id;
-        ResultSet rs = statement.executeQuery(sql);
-        if (rs.next()) {
-            photographer = new Photographer();
-            photographer.setID(rs.getInt("id"));
-            photographer.setFirstName(rs.getString("firstname"));
-            photographer.setLastName(rs.getString("lastname"));
-            photographer.setBirthDay(rs.getDate("birthday").toLocalDate());
-            photographer.setNotes(rs.getString("notes"));
-        }
-        rs.close();
-        statement.close();
+    private PhotographerModel toPhotographerObject(ResultSet rs) throws SQLException {
+        PhotographerModel photographer = new Photographer();
+        photographer.setID(rs.getInt("id"));
+        photographer.setFirstName(rs.getString("first_name"));
+        photographer.setLastName(rs.getString("last_name"));
+        photographer.setBirthDay(Helpers.toLocalDate(rs.getLong("birthday")));
+        photographer.setNotes(rs.getString("notes"));
         return photographer;
     }
 
-    private PictureModel makePictureModel(ResultSet result) throws SQLException {
+    private PictureModel toPictureObject(ResultSet result) throws SQLException {
         PictureModel picture = new Picture();
-
+        picture.setIPTC(new IPTC());
+        picture.setEXIF(new EXIF());
         picture.setID(result.getInt("id"));
         picture.setFileName(result.getString("filename"));
-        picture.setIPTC(new IPTC());
-
         picture.getIPTC().setCaption(result.getString("iptc_caption"));
         picture.getIPTC().setHeadline(result.getString("iptc_headline"));
         picture.getIPTC().setKeywords(result.getString("iptc_keywords"));
         picture.getIPTC().setByLine(result.getString("iptc_byline"));
         picture.getIPTC().setCopyrightNotice(result.getString("iptc_copyrightnotice"));
-
-        picture.setEXIF(new EXIF());
         picture.getEXIF().setMake(result.getString("exif_make"));
         picture.getEXIF().setFNumber(result.getDouble("exif_fnumber"));
         picture.getEXIF().setExposureTime(result.getDouble("exif_exposuretime"));
         picture.getEXIF().setISOValue(result.getDouble("exif_isovalue"));
         picture.getEXIF().setFlash(result.getBoolean("exif_flash"));
-
         picture.setCamera(getCamera(result.getInt("camera_id")));
-
         return picture;
     }
 
@@ -342,20 +331,11 @@ public class SQLiteDAL implements DataAccessLayer {
     @Override
     public Collection<PictureModel> getPictures(String namePart, PhotographerModel photographerParts, IPTCModel iptcParts, EXIFModel exifParts) throws Exception {
         // TODO: implement search
-        Collection<PictureModel> pictures = new ArrayList<>();
-        try (Statement statement = connection.createStatement()) {
-            String sql = "SELECT * FROM pictures";
-            try (ResultSet rs = statement.executeQuery(sql)) {
-                while (rs.next()) {
-                    // PictureModel picture = makePictureModel(rs);
-                    // pictures.add(picture);
-                }
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                System.exit(0);
-            }
-        }
-        return pictures;
+        Collection<PictureModel> pictureModels = new ArrayList<>();
+        getObjectsFrom(DBTable.PICTURES).forEach((o) -> {
+            pictureModels.add((PictureModel) o);
+        });
+        return pictureModels;
     }
 
     /**
@@ -366,22 +346,11 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public Collection<PhotographerModel> getPhotographers() throws Exception {
-        Collection<PhotographerModel> photographers = new ArrayList<>();
-        Statement statement = connection.createStatement();
-        String sql = "SELECT * FROM photographers";
-        ResultSet rs = statement.executeQuery(sql);
-        while (rs.next()) {
-            PhotographerModel photographer = new Photographer();
-            photographer.setID(rs.getInt("id"));
-            photographer.setFirstName(rs.getString("firstname"));
-            photographer.setLastName(rs.getString("lastname"));
-            photographer.setBirthDay(rs.getDate("birthday").toLocalDate());
-            photographer.setNotes(rs.getString("notes"));
-            photographers.add(photographer);
-        }
-        rs.close();
-        statement.close();
-        return photographers;
+        Collection<PhotographerModel> cameraModels = new ArrayList<>();
+        getObjectsFrom(DBTable.PHOTOGRAPHERS).forEach((o) -> {
+            cameraModels.add((PhotographerModel) o);
+        });
+        return cameraModels;
     }
 
     /**
@@ -415,6 +384,46 @@ public class SQLiteDAL implements DataAccessLayer {
         updateStatement.close();
     }
 
+    public ArrayList<Object> getObjectsFrom(DBTable table) {
+        ArrayList<Object> objects = new ArrayList<Object>();
+        final String string = "SELECT * FROM " + table;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        try {
+            statement = connection.prepareStatement(string);
+            result = statement.executeQuery();
+            while (result.next()) {
+                if (null != table) {
+                    switch (table) {
+                        case PICTURES:
+                            objects.add(toPictureObject(result));
+                            break;
+                        case PHOTOGRAPHERS:
+                            objects.add(toPhotographerObject(result));
+                            break;
+                        case CAMERAS:
+                            objects.add(toCameraObject(result));
+                            break;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            }
+        }
+        return objects;
+    }
+
     /**
      * Returns a list of all cameras.
      *
@@ -422,27 +431,11 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public Collection<CameraModel> getCameras() {
-        Collection<CameraModel> cameras = new ArrayList<>();
-        try (Statement statement = connection.createStatement()) {
-            final String sql = "SELECT * FROM cameras";
-            ResultSet rs = statement.executeQuery(sql);
-            while (rs.next()) {
-                Camera camera = new Camera();
-                int id = rs.getInt("id");
-                camera.setID(id);
-                camera.setProducer(rs.getString("producer"));
-                camera.setMake(rs.getString("make"));
-                camera.setBoughtOn(rs.getDate("boughton").toLocalDate());
-                camera.setNotes(rs.getString("notes"));
-                camera.setISOLimitAcceptable(rs.getDouble("isolimitacceptable"));
-                camera.setISOLimitGood(rs.getDouble("isolimitgood"));
-                cameras.add(camera);
-            }
-            rs.close();
-        } catch (SQLException s) {
-            System.err.println(s.getClass().getName() + ": " + s.getMessage());
-        }
-        return cameras;
+        Collection cameraModels = new ArrayList<>();
+        getObjectsFrom(DBTable.CAMERAS).forEach((o) -> {
+            cameraModels.add((CameraModel) o);
+        });
+        return cameraModels;
     }
 
     /**
@@ -453,31 +446,24 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public Camera getCamera(int id) {
+        return (Camera) getObjectFrom(id, DBTable.CAMERAS);
+    }
+
+    private CameraModel toCameraObject(ResultSet rs) throws SQLException {
         Camera camera = new Camera();
-        try (Statement statement = connection.createStatement()) {
-            final String sql = "SELECT * FROM cameras WHERE id=" + id;
-            ResultSet rs = statement.executeQuery(sql);
-            if (rs.next()) {
-                camera.setID(rs.getInt("id"));
-                camera.setProducer(rs.getString("producer"));
-                camera.setMake(rs.getString("make"));
-                camera.setBoughtOn(rs.getDate("bought_on").toLocalDate());
-                camera.setNotes(rs.getString("notes"));
-                camera.setISOLimitAcceptable(rs.getDouble("isolimitacceptable"));
-                camera.setISOLimitGood(rs.getDouble("isolimitgood"));
-            }
-            rs.close();
-        } catch (SQLException s) {
-            System.err.println(s.getClass().getName() + ": " + s.getMessage());
-        }
+        camera.setID(rs.getInt("id"));
+        camera.setProducer(rs.getString("producer"));
+        camera.setMake(rs.getString("make"));
+        camera.setBoughtOn(Helpers.toLocalDate(rs.getLong("bought_on")));
+        camera.setNotes(rs.getString("notes"));
+        camera.setISOLimitAcceptable(rs.getDouble("iso_limit_acceptable"));
+        camera.setISOLimitGood(rs.getDouble("iso_limit_good"));
         return camera;
     }
 
     private void addRowToTable(int id, DBTable table) {
         PreparedStatement statement;
-
         String string = "INSERT INTO " + table + " (id) VALUES (" + id + ")";
-
         try {
             statement = connection.prepareStatement(string);
             statement.executeUpdate();
@@ -487,5 +473,4 @@ public class SQLiteDAL implements DataAccessLayer {
 
         }
     }
-
 }
