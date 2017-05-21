@@ -34,18 +34,18 @@ public class SQLiteDALTest {
 
     public void testHasPicture(int id) throws SQLException {
         System.out.println(""
-                + "hasPicture\n"
-                + "==========");
+                + "containsPicture\n"
+                + "===============");
         SQLiteDAL dal = new SQLiteDAL();
-        assertEquals(true, dal.containsPicture(id));
+        assertEquals(true, dal.containsRowForTable(id, SQLiteDAL.TableNames.PICTURES.toString()));
     }
     
     @Test
     public void testSave_PictureModel() throws Exception {
         SQLiteDAL dal = new SQLiteDAL();
         System.out.println(""
-                + "save\n"
-                + "====");
+                + "save, delete\n"
+                + "============");
         PictureModel picture = new Picture();
         int testID = 1234;
         
@@ -57,11 +57,12 @@ public class SQLiteDALTest {
         picture.setIPTC(new IPTC("Example Caption", "Example Headline", "A, number, of, keywords", "John Photographer", "(c) 2017"));
            
         dal.save(picture);
-        assertEquals(true, dal.containsPicture(testID));
+        assertEquals(true, dal.containsRowForTable(testID, SQLiteDAL.TableNames.PICTURES.toString()));
         dal.deletePicture(testID);
-        assertEquals(false, dal.containsPicture(testID));
- 
+        assertEquals(false, dal.containsRowForTable(testID, SQLiteDAL.TableNames.PICTURES.toString())); 
+        
     }
+    
     
 
     @Test
@@ -75,6 +76,7 @@ public class SQLiteDALTest {
         System.out.println(p);
         assertEquals(p.getID(), ID);
     }
+        
     
 
 }

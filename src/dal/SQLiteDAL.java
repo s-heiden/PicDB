@@ -14,8 +14,40 @@ import java.util.Collection;
 
 public class SQLiteDAL implements DataAccessLayer {
 
+    public enum TableNames {
+        PICTURES, PHOTOGRAPHERS, CAMERAS;
+
+        static public boolean contains(String value) {
+            if (value == null) {
+                return false;
+            }
+            try {
+                valueOf(value.toUpperCase());
+                return true;
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
+        }
+
+        @Override
+        public final String toString() {
+            switch (this) {
+                case PICTURES:
+                    return "pictures";
+                case PHOTOGRAPHERS:
+                    return "photographers";
+                case CAMERAS:
+                    return "cameras";
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+    }
+
     private static final String DATABASE_URL = "jdbc:sqlite:picdb.db";
     private static final String SQLITE_JDBC = "org.sqlite.JDBC";
+
     private Connection connection;
 
     /**
@@ -107,56 +139,31 @@ public class SQLiteDAL implements DataAccessLayer {
 
     }
 
-    public boolean containsPicture(int id) throws SQLException {
-        PreparedStatement statement = null;
-        String string = "SELECT id FROM pictures WHERE id = ?";
+    public boolean containsRowForTable(int id, String table) {
+        if (TableNames.contains(table)) {
+            PreparedStatement statement = null;
+            String string = "SELECT id FROM " + table + " WHERE id = ?";
+            try {
+                statement = connection.prepareStatement(string);
+                statement.setInt(1, id);
+                ResultSet result = statement.executeQuery();
 
-        try {
-            statement = connection.prepareStatement(string);
-            statement.setInt(1, id);
-            ResultSet result = statement.executeQuery();
-
-            if (result.next()) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (statement != null) {
-                statement.close();
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns a filtered list of Pictures from the directory, based on a database SQLiteDAL.
-     *
-     * @param namePart may contain a name which is searched in the database
-     * @param photographerParts may contain photographer information which is searched in the database
-     * @param iptcParts may contain IPTC information which is searched in the database
-     * @param exifParts may contain EXIF information which is searched in the database
-     * @return a Collection of PictureModel objects which match the filter criteria
-     */
-    @Override
-    public Collection<PictureModel> getPictures(String namePart, PhotographerModel photographerParts, IPTCModel iptcParts, EXIFModel exifParts) throws Exception {
-        // TODO: implement search
-        Collection<PictureModel> pictures = new ArrayList<>();
-        try (Statement statement = connection.createStatement()) {
-            String sql = "SELECT * FROM pictures";
-            try (ResultSet rs = statement.executeQuery(sql)) {
-                while (rs.next()) {
-                    // PictureModel picture = makePictureModel(rs);
-                    // pictures.add(picture);
-                }
-            } catch (Exception e) {
+                return result.next();
+            } catch (SQLException e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                System.exit(0);
+            } finally {
+                try {
+                    if (statement != null) {
+                        statement.close();
+                    }
+                } catch (SQLException e) {
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                }
             }
+            return false;
+        } else {
+            throw new IllegalArgumentException("Table '" + table + "' unknown.");
         }
-        return pictures;
     }
 
     /**
@@ -168,73 +175,117 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public PictureModel getPicture(int id) throws Exception {
-        PictureModel picture = new Picture();
-        PreparedStatement statement = null;
-        ResultSet result = null;
-        String string = "SELECT "
-                + "id, "
-                + "camera_id, "
-                + "filename, "
-                + "iptc_caption, "
-                + "iptc_headline, "
-                + "iptc_keywords, "
-                + "iptc_byline,"
-                + "iptc_copyrightnotice, "
-                + "exif_make, "
-                + "exif_fnumber, "
-                + "exif_exposuretime, "
-                + "exif_isovalue, "
-                + "exif_flash, "
-                + "exif_exposureprogram "
-                + "FROM pictures WHERE id=?";
 
-        try {
-            statement = connection.prepareStatement(string);
-            statement.setInt(1, id);
-            result = statement.executeQuery();
-            
-            if (result.next()) {
-                picture = makePictureModel(result);
+
+        return (Picture) getObjectFromTable(id, "pictures");
+    }
+
+    private Object getObjectFromTable(int id, String table) {
+        Object o = null;
+        if (TableNames.contains(table)) {
+            PreparedStatement statement = null;
+            ResultSet result = null;
+            String string = "SELECT * FROM " + table + " WHERE id = ?";
+
+            if (TableNames.PICTURES.toString().equals(table)) {
+                o = new Picture();
+            } else if (TableNames.PHOTOGRAPHERS.toString().equals(table)) {
+                o = new Photographer();
             } else {
-                // no picture of this id was found
+                o = new Camera();
             }
-            result.close();
-        } catch (SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        } finally {
-            if (result != null) {
+
+            try {
+                statement = connection.prepareStatement(string);
+                statement.setInt(1, id);
+                result = statement.executeQuery();
+
+                if (result.next()) {
+                    if (TableNames.PICTURES.toString().equals(table)) {
+                        o = makePictureModel(result);
+                    } else if (TableNames.PHOTOGRAPHERS.toString().equals(table)) {
+                        // o = makePhotographerModel(result);
+                    } else {
+                        // o = makeCameraModel(result);
+                    }
+
+                } else {
+                    // no picture of this id was found
+                }
                 result.close();
-            }
-            if (statement != null) {
-                statement.close();
+            } catch (SQLException e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            } finally {
+                try {
+                    if (result != null) {
+                        result.close();
+                    }
+                    if (statement != null) {
+                        statement.close();
+                    }
+                } catch (SQLException e) {
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                }
             }
         }
-        return picture;
+        return o;
+    }
+
+    /**
+     * Returns the PhotographerModel with the given id.
+     *
+     * @param id the id of the photographer that is being searched
+     * @return the PhotographerModel with the given id.
+     * @throws java.lang.Exception
+     */
+    @Override
+    public PhotographerModel getPhotographer(int id) throws Exception {
+        PhotographerModel photographer = null;
+        /*
+     
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        String string = "SELECT * FROM photographers WHERE id = ?";
+         */
+
+        Statement statement = connection.createStatement();
+        String sql = "SELECT * FROM photographers WHERE id=" + id;
+        ResultSet rs = statement.executeQuery(sql);
+        if (rs.next()) {
+            photographer = new Photographer();
+            photographer.setID(rs.getInt("id"));
+            photographer.setFirstName(rs.getString("firstname"));
+            photographer.setLastName(rs.getString("lastname"));
+            photographer.setBirthDay(rs.getDate("birthday").toLocalDate());
+            photographer.setNotes(rs.getString("notes"));
+        }
+        rs.close();
+        statement.close();
+        return photographer;
     }
 
     private PictureModel makePictureModel(ResultSet result) throws SQLException {
         PictureModel picture = new Picture();
-        
+
         picture.setID(result.getInt("id"));
         picture.setFileName(result.getString("filename"));
         picture.setIPTC(new IPTC());
-        
+
         picture.getIPTC().setCaption(result.getString("iptc_caption"));
         picture.getIPTC().setHeadline(result.getString("iptc_headline"));
         picture.getIPTC().setKeywords(result.getString("iptc_keywords"));
         picture.getIPTC().setByLine(result.getString("iptc_byline"));
         picture.getIPTC().setCopyrightNotice(result.getString("iptc_copyrightnotice"));
-        
+
         picture.setEXIF(new EXIF());
         picture.getEXIF().setMake(result.getString("exif_make"));
         picture.getEXIF().setFNumber(result.getDouble("exif_fnumber"));
         picture.getEXIF().setExposureTime(result.getDouble("exif_exposuretime"));
         picture.getEXIF().setISOValue(result.getDouble("exif_isovalue"));
         picture.getEXIF().setFlash(result.getBoolean("exif_flash"));
-        
+
         picture.setCamera(getCamera(result.getInt("camera_id")));
-        
+
         return picture;
     }
 
@@ -247,8 +298,8 @@ public class SQLiteDAL implements DataAccessLayer {
     @Override
     public void save(PictureModel picture) throws Exception {
         // check if the picture already exists
-        if (!containsPicture(picture.getID())) {
-            addEntityToPictures(picture.getID());
+        if (!containsRowForTable(picture.getID(), TableNames.PICTURES.toString())) {
+            addRowToTable(picture.getID(), "pictures");
         }
         // update the database
         final String string = "UPDATE pictures SET "
@@ -283,7 +334,6 @@ public class SQLiteDAL implements DataAccessLayer {
         updateStatement.setInt(13, picture.getCamera().getID());
         updateStatement.executeUpdate();
         updateStatement.close();
-        // TODO: update to also save the camera if it does not yet exist.
     }
 
     /**
@@ -294,18 +344,69 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public void deletePicture(int id) throws Exception {
-        final String string = "DELETE FROM pictures WHERE id = " + id;
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(string);
-            statement.executeUpdate();
-        } catch (SQLException e){
-           System.err.println(e.getClass().getName() + ": " + e.getMessage()); 
-        } finally {
-            if (statement != null){
-                statement.close();
+        deleteRowFromTable(id, "pictures");
+    }
+
+    private void deleteRowFromTable(int id, String table) {
+        if (TableNames.contains(table)) {
+            final String string = "DELETE FROM " + table + " WHERE id = " + id;
+            PreparedStatement statement = null;
+            try {
+                statement = connection.prepareStatement(string);
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            } finally {
+                try {
+                    if (statement != null) {
+                        statement.close();
+                    }
+                } catch (SQLException e) {
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Table '" + table + "' unknown.");
+        }
+    }
+
+    /**
+     * Deletes a Photographer. An exception is thrown if a photographer is still linked to a picture.
+     *
+     * @param id the photographer which should to be deleted
+     * @throws java.lang.Exception
+     */
+    @Override
+    public void deletePhotographer(int id) throws Exception {
+        deleteRowFromTable(id, "photographers");
+    }
+
+    /**
+     * Returns a filtered list of Pictures from the directory, based on a database SQLiteDAL.
+     *
+     * @param namePart may contain a name which is searched in the database
+     * @param photographerParts may contain photographer information which is searched in the database
+     * @param iptcParts may contain IPTC information which is searched in the database
+     * @param exifParts may contain EXIF information which is searched in the database
+     * @return a Collection of PictureModel objects which match the filter criteria
+     */
+    @Override
+    public Collection<PictureModel> getPictures(String namePart, PhotographerModel photographerParts, IPTCModel iptcParts, EXIFModel exifParts) throws Exception {
+        // TODO: implement search
+        Collection<PictureModel> pictures = new ArrayList<>();
+        try (Statement statement = connection.createStatement()) {
+            String sql = "SELECT * FROM pictures";
+            try (ResultSet rs = statement.executeQuery(sql)) {
+                while (rs.next()) {
+                    // PictureModel picture = makePictureModel(rs);
+                    // pictures.add(picture);
+                }
+            } catch (Exception e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                System.exit(0);
             }
         }
+        return pictures;
     }
 
     /**
@@ -332,32 +433,6 @@ public class SQLiteDAL implements DataAccessLayer {
         rs.close();
         statement.close();
         return photographers;
-    }
-
-    /**
-     * Returns the PhotographerModel with the given id.
-     *
-     * @param id the id of the photographer that is being searched
-     * @return the PhotographerModel with the given id.
-     * @throws java.lang.Exception
-     */
-    @Override
-    public PhotographerModel getPhotographer(int id) throws Exception {
-        PhotographerModel photographer = null;
-        Statement statement = connection.createStatement();
-        String sql = "SELECT * FROM photographers WHERE id=" + id;
-        ResultSet rs = statement.executeQuery(sql);
-        if (rs.next()) {
-            photographer = new Photographer();
-            photographer.setID(rs.getInt("id"));
-            photographer.setFirstName(rs.getString("firstname"));
-            photographer.setLastName(rs.getString("lastname"));
-            photographer.setBirthDay(rs.getDate("birthday").toLocalDate());
-            photographer.setNotes(rs.getString("notes"));
-        }
-        rs.close();
-        statement.close();
-        return photographer;
     }
 
     /**
@@ -389,20 +464,6 @@ public class SQLiteDAL implements DataAccessLayer {
         updateStatement.setString(4, photographer.getNotes());
         updateStatement.executeUpdate();
         updateStatement.close();
-    }
-
-    /**
-     * Deletes a Photographer. An exception is thrown if a photographer is still linked to a picture.
-     *
-     * @param id the photographer which should to be deleted
-     * @throws java.lang.Exception
-     */
-    @Override
-    public void deletePhotographer(int id) throws Exception {
-        Statement statement = connection.createStatement();
-        final String sql = "DELETE FROM photographers WHERE id=" + id;
-        statement.executeUpdate(sql);
-        statement.close();
     }
 
     /**
@@ -463,17 +524,22 @@ public class SQLiteDAL implements DataAccessLayer {
         return camera;
     }
 
-    private void addEntityToPictures(int id) {
-        PreparedStatement statement;
-        String string = "INSERT INTO pictures (id) VALUES (" + id + ")";
-                
-        try {
-            statement = connection.prepareStatement(string);
-            statement.executeUpdate();
-        } catch (SQLException s) {
-            System.err.println(s.getClass().getName() + ": " + s.getMessage());
-        } finally {
+    private void addRowToTable(int id, String table) {
+        if (TableNames.contains(table)) {
+            PreparedStatement statement;
 
+            String string = "INSERT INTO " + table + " (id) VALUES (" + id + ")";
+
+            try {
+                statement = connection.prepareStatement(string);
+                statement.executeUpdate();
+            } catch (SQLException s) {
+                System.err.println(s.getClass().getName() + ": " + s.getMessage());
+            } finally {
+
+            }
+        } else {
+            throw new IllegalArgumentException("Table '" + table + "' unknown.");
         }
     }
 
