@@ -15,9 +15,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-
 public final class BL implements BusinessLayer {
-    
 
     private final DataAccessLayer dal;
 
@@ -65,8 +63,6 @@ public final class BL implements BusinessLayer {
     public void save(PictureModel picture) throws Exception {
         if (picture.getID() < 0) { // checks if no valid ID has been set yet
             picture.setID(((SQLiteDAL) dal).nextIdFor(DBTable.PICTURES));
-            picture.setEXIF(extractEXIF(picture.getFileName()));
-            picture.setIPTC(extractIPTC(picture.getFileName()));
         }
         dal.save(picture);
     }
@@ -88,7 +84,7 @@ public final class BL implements BusinessLayer {
         if (pictureDirectory.isDirectory()) {
             List<String> dirListing = Arrays.asList(pictureDirectory.list());
             List<String> filenamesInModel = new ArrayList<>();
-            
+
             // if a picture does not exist in the directory but in the model + db
             for (PictureModel picture : getPictures()) {
                 filenamesInModel.add(picture.getFileName());
@@ -102,10 +98,9 @@ public final class BL implements BusinessLayer {
                 if (!filenamesInModel.contains(picDirFilename)) {
                     PictureModel picture = new Picture();
                     picture.setFileName(picDirFilename);
-                    picture.setIPTC(new IPTC());
-                    picture.setCamera(new Camera());
-                    picture.setEXIF(new EXIF());
                     try {
+                        picture.setEXIF(extractEXIF(picture.getFileName()));
+                        picture.setIPTC(extractIPTC(picture.getFileName()));
                         save(picture);
                     } catch (Exception e) {
                         System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -129,6 +124,7 @@ public final class BL implements BusinessLayer {
     public void save(PhotographerModel photographer) throws Exception {
         if (photographer.getID() < 0) {
             photographer.setID(((SQLiteDAL) dal).nextIdFor(DBTable.PHOTOGRAPHERS));
+            System.out.println("Trying to save photographer: " + photographer.getID());
         }
         dal.save(photographer);
     }
@@ -139,7 +135,7 @@ public final class BL implements BusinessLayer {
     }
 
     @Override
-    public IPTCModel extractIPTC(String filename) throws Exception {
+    public IPTCModel extractIPTC(String filename) throws FileNotFoundException {
         if (existsInPicturePath(filename)) {
             String randomString = getRandomString(5);
             IPTCModel iptcModel = new IPTC();
@@ -155,12 +151,10 @@ public final class BL implements BusinessLayer {
     }
 
     @Override
-    public EXIFModel extractEXIF(String filename) throws Exception {
-
-        
+    public EXIFModel extractEXIF(String filename) throws FileNotFoundException {
         if (Helpers.existsInPicturePath(filename)) {
             EXIFModel exifModel = new EXIF();
-            exifModel.setExposureProgram(null);
+            exifModel.setExposureProgram(Helpers.randomEnum(ExposurePrograms.class));
             exifModel.setExposureTime(Constants.EXAMPLE_EXPOSURE_TIMES[new Random().nextInt(Constants.EXAMPLE_EXPOSURE_TIMES.length)]);
             exifModel.setFNumber(Constants.EXAMPLE_F_NUMBERS[new Random().nextInt(Constants.EXAMPLE_F_NUMBERS.length)]);
             exifModel.setFlash(Math.random() > 0.5);
@@ -190,5 +184,5 @@ public final class BL implements BusinessLayer {
     public CameraModel getCamera(int ID) {
         return dal.getCamera(ID);
     }
-    
+
 }

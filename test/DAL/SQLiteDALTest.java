@@ -50,7 +50,7 @@ public class SQLiteDALTest {
     @Test
     public void test_save_picture() throws Exception {
         System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+        }.getClass().getEnclosingMethod().getName().toUpperCase());
 
         SQLiteDAL dal = new SQLiteDAL();
         PictureModel picture = new Picture();
@@ -83,7 +83,7 @@ public class SQLiteDALTest {
     @Test
     public void test_get_picture() throws Exception {
         System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+        }.getClass().getEnclosingMethod().getName().toUpperCase());
 
         SQLiteDAL dal = new SQLiteDAL();
         int testID = 1234;
@@ -103,7 +103,7 @@ public class SQLiteDALTest {
     @Test
     public void test_save_photographer() throws Exception {
         System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+        }.getClass().getEnclosingMethod().getName().toUpperCase());
 
         SQLiteDAL dal = new SQLiteDAL();
         PhotographerModel p = new Photographer();
@@ -125,7 +125,7 @@ public class SQLiteDALTest {
     @Test
     public void test_get_photographer() throws Exception {
         System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+        }.getClass().getEnclosingMethod().getName().toUpperCase());
 
         SQLiteDAL dal = new SQLiteDAL();
         int ID = 1;
@@ -137,7 +137,7 @@ public class SQLiteDALTest {
     @Test
     public void test_get_camera() throws Exception {
         System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+        }.getClass().getEnclosingMethod().getName().toUpperCase());
 
         SQLiteDAL dal = new SQLiteDAL();
         int ID = 1;
@@ -149,7 +149,7 @@ public class SQLiteDALTest {
     @Test
     public void test_get_cameras() throws Exception {
         System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+        }.getClass().getEnclosingMethod().getName().toUpperCase());
 
         SQLiteDAL dal = new SQLiteDAL();
         Collection<CameraModel> d = dal.getCameras();
@@ -162,7 +162,7 @@ public class SQLiteDALTest {
     @Test
     public void test_get_photographers() throws Exception {
         System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+        }.getClass().getEnclosingMethod().getName().toUpperCase());
 
         SQLiteDAL dal = new SQLiteDAL();
         Collection<PhotographerModel> d = dal.getPhotographers();
@@ -175,7 +175,7 @@ public class SQLiteDALTest {
     @Test
     public void test_get_pictures_without_search() throws Exception {
         System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+        }.getClass().getEnclosingMethod().getName().toUpperCase());
 
         SQLiteDAL dal = new SQLiteDAL();
         Collection<PictureModel> d = dal.getPictures(null, null, null, null);
@@ -188,7 +188,7 @@ public class SQLiteDALTest {
     @Test
     public void test_next_id_for() throws Exception {
         System.out.println(new Object() {
-        }.getClass().getEnclosingMethod().getName());
+        }.getClass().getEnclosingMethod().getName().toUpperCase());
 
         SQLiteDAL dal = new SQLiteDAL();
         System.out.println("Next ID for Photographers: " + dal.nextIdFor(DBTable.PHOTOGRAPHERS));

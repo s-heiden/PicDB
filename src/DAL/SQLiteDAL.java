@@ -229,7 +229,7 @@ public class SQLiteDAL implements DataAccessLayer {
     public void save(PictureModel picture) {
         PreparedStatement statement = null;
 
-        if (!containsRowForTable(picture.getID(), DBTable.PICTURES)) {      
+        if (!containsRowForTable(picture.getID(), DBTable.PICTURES)) {
             addRowToTable(picture.getID(), DBTable.PICTURES);
         }
         final String string = "UPDATE pictures SET "
@@ -249,27 +249,25 @@ public class SQLiteDAL implements DataAccessLayer {
         try {
             statement = connection.prepareStatement(string);
             statement.setString(1, picture.getFileName());
-            
-//            if(picture.getIPTC() != null) {
-                System.out.println("picture.getIPTC(): " + picture.getIPTC());
+
+            if (picture.getIPTC() != null) {
                 statement.setString(2, picture.getIPTC().getCaption());
                 statement.setString(3, picture.getIPTC().getHeadline());
                 statement.setString(4, picture.getIPTC().getKeywords());
                 statement.setString(5, picture.getIPTC().getByLine());
                 statement.setString(6, picture.getIPTC().getCopyrightNotice());
-//            }
-//            if(picture.getEXIF() != null) {
-                System.out.println("picture.getEXIF(): " + picture.getEXIF());
+            }
+            if (picture.getEXIF() != null) {
                 statement.setString(7, picture.getEXIF().getMake());
                 statement.setDouble(8, picture.getEXIF().getFNumber());
                 statement.setDouble(9, picture.getEXIF().getExposureTime());
                 statement.setDouble(10, picture.getEXIF().getISOValue());
                 statement.setBoolean(11, picture.getEXIF().getFlash());
                 statement.setInt(12, picture.getEXIF().getExposureProgram().getValue());
-//            }
-//            if(picture.getCamera() != null) {
+            }
+            if (picture.getCamera() != null) {
                 statement.setInt(13, picture.getCamera().getID());
-//            }
+            }
             statement.executeUpdate();
             statement.close();
         } catch (SQLException e) {
@@ -325,7 +323,7 @@ public class SQLiteDAL implements DataAccessLayer {
     @Override
     public Collection<PictureModel> getPictures(String namePart, PhotographerModel photographerParts, IPTCModel iptcParts, EXIFModel exifParts) {
         // TODO: implement search
-        Collection<PictureModel> pictureModels = new ArrayList<>();        
+        Collection<PictureModel> pictureModels = new ArrayList<>();
         getObjectsFrom(DBTable.PICTURES).forEach((o) -> {
             pictureModels.add((PictureModel) o);
         });
@@ -459,13 +457,13 @@ public class SQLiteDAL implements DataAccessLayer {
             closeStatementSilently(statement);
         }
     }
-    
-    public int nextIdFor(DBTable table){
+
+    public int nextIdFor(DBTable table) {
         int id = 1;
         PreparedStatement statement = null;
         ResultSet result = null;
         String string = "SELECT MAX(id) + 1 AS next_id FROM " + table;
-        
+
         try {
             statement = connection.prepareStatement(string);
             result = statement.executeQuery();
@@ -477,7 +475,7 @@ public class SQLiteDAL implements DataAccessLayer {
         } finally {
             closeResultSilently(result);
             closeStatementSilently(statement);
-        }        
+        }
         return id;
     }
 }
