@@ -6,6 +6,7 @@ import BIF.SWE2.interfaces.models.*;
  * Picture Model.
  */
 public class Picture implements PictureModel {
+
     private int id = -1;
     private String fileName;
     private IPTCModel iptcModel;
@@ -113,13 +114,13 @@ public class Picture implements PictureModel {
      */
     @Override
     public String toString() {
-        return "PictureModelImpl{" +
-                "id=" + id +
-                ", fileName='" + fileName + '\'' +
-                ", iptcModel=" + iptcModel +
-                ", exifModel=" + exifModel +
-                ", cameraModel=" + cameraModel +
-                ", photographer=" + photographer +
-                '}';
+        return "PictureModelImpl{"
+                + "id=" + id
+                + ", fileName='" + fileName + '\''
+                + ", iptcModel=" + iptcModel
+                + ", exifModel=" + exifModel
+                + ", cameraModel=" + cameraModel
+                + ", photographer=" + photographer
+                + '}';
     }
 }

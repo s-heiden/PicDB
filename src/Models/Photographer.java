@@ -8,6 +8,7 @@ import java.time.LocalDate;
  * Photographer Model
  */
 public class Photographer implements PhotographerModel {
+
     private int id = -1;
     private String firstName;
     private String lastName;
@@ -81,12 +82,12 @@ public class Photographer implements PhotographerModel {
 
     @Override
     public String toString() {
-        return "PhotographerModelImpl{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", birthDay=" + birthDay +
-                ", notes='" + notes + '\'' +
-                '}';
+        return "PhotographerModelImpl{"
+                + "id=" + id
+                + ", firstName='" + firstName + '\''
+                + ", lastName='" + lastName + '\''
+                + ", birthDay=" + birthDay
+                + ", notes='" + notes + '\''
+                + '}';
     }
 }

@@ -8,6 +8,7 @@ import java.time.LocalDate;
  * Camera Model.
  */
 public class Camera implements CameraModel {
+
     private int id = -1;
     private String producer;
     private String make;
@@ -16,18 +17,19 @@ public class Camera implements CameraModel {
     private double isoLimitGood;
     private double isoLimitAcceptable;
 
-    public Camera(){
-    }    
-    
+    public Camera() {
+    }
+
     /**
      * Constructor which sets all member variables.
+     *
      * @param id
      * @param producer
      * @param make
      * @param boughtOn
      * @param notes
      * @param isoLimitGood
-     * @param isoLimitAcceptable 
+     * @param isoLimitAcceptable
      */
     public Camera(int id, String producer, String make, LocalDate boughtOn, String notes, double isoLimitGood, double isoLimitAcceptable) {
         this.id = id;
@@ -38,7 +40,7 @@ public class Camera implements CameraModel {
         this.isoLimitGood = isoLimitGood;
         this.isoLimitAcceptable = isoLimitAcceptable;
     }
-    
+
     /**
      * Returns database primary key
      */
@@ -132,14 +134,14 @@ public class Camera implements CameraModel {
 
     @Override
     public String toString() {
-        return "CameraModelImpl{" +
-                "id=" + id +
-                ", producer='" + producer + '\'' +
-                ", make='" + make + '\'' +
-                ", purchaseDate=" + boughtOn +
-                ", notes='" + notes + '\'' +
-                ", isoLimitGood=" + isoLimitGood +
-                ", isoLimitAcceptable=" + isoLimitAcceptable +
-                '}';
+        return "CameraModelImpl{"
+                + "id=" + id
+                + ", producer='" + producer + '\''
+                + ", make='" + make + '\''
+                + ", purchaseDate=" + boughtOn
+                + ", notes='" + notes + '\''
+                + ", isoLimitGood=" + isoLimitGood
+                + ", isoLimitAcceptable=" + isoLimitAcceptable
+                + '}';
     }
 }

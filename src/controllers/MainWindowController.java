@@ -1,5 +1,6 @@
 package controllers;
 
+import BIF.SWE2.interfaces.presentationmodels.MainWindowPresentationModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +19,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -27,41 +27,55 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
+import javafx.scene.layout.AnchorPane;
+import viewModels.MainWindowPM;
 
 public class MainWindowController implements Initializable {
 
-    @FXML private GridPane iptc_gridpane;
-    @FXML private GridPane exif_gridpane;
+    @FXML
+    private GridPane iptc_gridpane;
+    @FXML
+    private GridPane exif_gridpane;
+    @FXML
+    private AnchorPane selectedImagePane;
+    
     private Set<TextField> iptcTextfields;
     private Set<TextField> exifTextfields;
-
-    @FXML private BorderPane rootPane;
+    private MainWindowPresentationModel mainWindowPM;
+    
+    @FXML
+    private BorderPane rootPane;
     private Stage primaryStage;
 
     /**
-     * It is not possible to access fxml elements in controller ctor
-     * => use initialize() of Initializable interface
+     * It is not possible to access fxml elements in controller ctor => use initialize() of Initializable interface
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        System.out.println("test");
-
+        mainWindowPM = new MainWindowPM();
+        
+        drawSelectedImage();
+        
         iptcTextfields = getAllTextFieldsFromGridpane(iptc_gridpane);
         exifTextfields = getAllTextFieldsFromGridpane(exif_gridpane);
+        
+    }
 
-        // just testing
-//        for (TextField t : iptcTextfields) {
-//            System.out.println(t.toString());
-//        }
-//        for (TextField t : exifTextfields) {
-//            System.out.println(t.toString());
-//        }
+    private void drawSelectedImage() {        
+        Image selectedImage = new Image(mainWindowPM.getCurrentPicture().getFilePath());
+        ImageView selectedImageView = new ImageView();
+        selectedImageView.setPreserveRatio(true);
+        selectedImageView.setSmooth(true);
+        selectedImageView.setCache(true);
+        selectedImageView.setImage(selectedImage);
+        selectedImageView.fitWidthProperty().bind(selectedImagePane.widthProperty());
+        selectedImagePane.getChildren().add(selectedImageView);       
     }
 
     private Set<TextField> getAllTextFieldsFromGridpane(GridPane gridPane) {
         Set<TextField> textFields = new HashSet<>();
-        for(Node node:gridPane.getChildren()) {
-            if(node instanceof TextField) {
+        for (Node node : gridPane.getChildren()) {
+            if (node instanceof TextField) {
                 textFields.add((TextField) node);
             }
         }
@@ -69,9 +83,8 @@ public class MainWindowController implements Initializable {
     }
 
     /**
-     * For the node to access the primary stage, getScene() must be called on this node;
-     *  getScene() however does not work for Menu Items =>
-     *  => call getScene() on some other node (here: root node)
+     * For the node to access the primary stage, getScene() must be called on this node; getScene() however does not
+     * work for Menu Items => => call getScene() on some other node (here: root node)
      */
     private Stage getPrimaryStage() {
         if (primaryStage == null) {
@@ -80,40 +93,28 @@ public class MainWindowController implements Initializable {
         return primaryStage;
     }
 
-    // Menu actions
-
-    @FXML protected void openImagesFolder(ActionEvent event) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Open Images Folder");
-        chooser.showOpenDialog(rootPane.getScene().getWindow());
-    }
-
-    @FXML protected void closeProgram(ActionEvent event) {
+    @FXML
+    protected void closeProgram(ActionEvent event) {
         getPrimaryStage().close();
     }
 
     // saves IPTC and EXIF metadata from texts fields of tab panel into DB
-    @FXML protected void saveImageMetadata(ActionEvent event) {
-        makeTextfieldsEditable(iptcTextfields, false);
-        makeTextfieldsEditable(exifTextfields, false);
+    @FXML
+    protected void saveImageMetadata(ActionEvent event) {
         saveMetadataToDatabase();
     }
 
-
-    @FXML public void showHelp(ActionEvent actionEvent) {
-          showDialog("Help",
-                  "Lorem ipsum dolor sit amet, eam no minim graeci sanctus, mea dolore periculis at. Meis utamur cu duo, sed amet dicta ei. Vim quas audiam eleifend ne, error audiam posidonium id vix. Harum urbanitas ius ei, et dico habeo mel. No partiendo expetendis vel.\n\n"
-                  + "Elitr quidam tibique pri id. Eum id reque accusata rationibus. Eu omnis phaedrum mea, has munere probatus forensibus te, has et causae appetere. Id sit eius theophrastus, scripta facilisi sed et. Sit equidem minimum ad.\n\n"
-                  + "Lorem ipsum dolor sit amet, eam no minim graeci sanctus, mea dolore periculis at. Meis utamur cu duo, sed amet dicta ei. Vim quas audiam eleifend ne, error audiam posidonium id vix. Harum urbanitas ius ei, et dico habeo mel. No partiendo expetendis vel.\n\n"
-                  + "Elitr quidam tibique pri id. Eum id reque accusata rationibus. Eu omnis phaedrum mea, has munere probatus forensibus te, has et causae appetere. Id sit eius theophrastus, scripta facilisi sed et. Sit equidem minimum ad.\n\n"
-          );
+    @FXML
+    public void showHelp(ActionEvent actionEvent) {
+        showDialog("Help", "Visit our help page at: https://github.com/s-heiden/PicDB\n");
     }
 
-    @FXML public void showAbout(ActionEvent actionEvent) {
+    @FXML
+    public void showAbout(ActionEvent actionEvent) {
         showDialog("About",
-                "FancyImageManager 1.0 \n" +
-                "Created by Max Musterman & Co \n" +
-                "2017");
+                "PicDB 1.0\n"
+                + "(c) Team\n"
+                + "2017");
     }
 
     private void showDialog(String title, String dialogTextContent) {
@@ -158,35 +159,23 @@ public class MainWindowController implements Initializable {
         dialog.show();
     }
 
-    // Edit and Save buttons actions in the right pane (IPTC & EXIF metadata)
-    public void editIptc(ActionEvent actionEvent) {
-        makeTextfieldsEditable(iptcTextfields, true);
-    }
-
     public void saveIptc(ActionEvent actionEvent) {
-        makeTextfieldsEditable(iptcTextfields, false);
         saveMetadataToDatabase();
-    }
-
-    public void editExif(ActionEvent actionEvent) {
-        makeTextfieldsEditable(exifTextfields, true);
     }
 
     public void saveExif(ActionEvent actionEvent) {
-        makeTextfieldsEditable(exifTextfields, false);
         saveMetadataToDatabase();
     }
 
-    private void makeTextfieldsEditable(Set<TextField> fields, Boolean makeEditable) {
-        for (TextField textField : fields) {
-            textField.setDisable(!makeEditable);
-        }
-    }
+//    private void makeTextfieldsEditable(Set<TextField> fields, Boolean makeEditable) {
+//        for (TextField textField : fields) {
+//            textField.setDisable(!makeEditable);
+//        }
+//    }
 
     private void saveMetadataToDatabase() {
         // TODO: implement
     }
-
 
     public void showPhotographers(ActionEvent actionEvent) {
 

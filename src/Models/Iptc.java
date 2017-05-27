@@ -3,9 +3,9 @@ package Models;
 import BIF.SWE2.interfaces.models.IPTCModel;
 
 /**
- * IPTC Model.
+ * Iptc Model.
  */
-public class IPTC implements IPTCModel {
+public class Iptc implements IPTCModel {
 
     private String caption;
     private String headline;
@@ -13,10 +13,10 @@ public class IPTC implements IPTCModel {
     private String byLine;
     private String copyrightNotice;
 
-    public IPTC() {
+    public Iptc() {
     }
 
-    public IPTC(String caption, String headline, String keywords, String byLine, String copyrightNotice) {
+    public Iptc(String caption, String headline, String keywords, String byLine, String copyrightNotice) {
         this.caption = caption;
         this.headline = headline;
         this.keywords = keywords;

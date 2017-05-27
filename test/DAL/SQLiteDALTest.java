@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Random;
 import Models.Camera;
-import Models.EXIF;
-import Models.IPTC;
+import Models.Exif;
+import Models.Iptc;
 import Models.Photographer;
 import Models.Picture;
 import org.junit.AfterClass;
@@ -32,12 +32,12 @@ public class SQLiteDALTest {
     public static void tearDownClass() {
     }
 
-    public void test_has_picture(int id) throws SQLException {      
+    public void test_has_picture(int id) throws SQLException {
         SQLiteDAL dal = new SQLiteDAL();
         assertEquals(true, dal.containsRowForTable(id, DBTable.PICTURES));
     }
 
-    public void test_has_camera(int id) throws SQLException {       
+    public void test_has_camera(int id) throws SQLException {
         SQLiteDAL dal = new SQLiteDAL();
         assertEquals(true, dal.containsRowForTable(id, DBTable.CAMERAS));
     }
@@ -45,6 +45,15 @@ public class SQLiteDALTest {
     public void test_has_photographer(int id) throws SQLException {
         SQLiteDAL dal = new SQLiteDAL();
         assertEquals(true, dal.containsRowForTable(id, DBTable.PHOTOGRAPHERS));
+    }
+
+    @Test
+    public void hello_Any_DataAccessLayer() {
+        System.out.println(new Object() {
+        }.getClass().getEnclosingMethod().getName().toUpperCase());
+
+        SQLiteDAL obj = new SQLiteDAL();
+        assertNotNull("getAnyDataAccessLayer", obj);
     }
 
     @Test
@@ -60,18 +69,18 @@ public class SQLiteDALTest {
 
         picture.setFileName("C:\\imgs\\img_0001.jpg");
         picture.setCamera(new Camera(1, "Sony", "X-301", LocalDate.now(), "Inter Arma Enim Silent Leges", 3.1, 4.7));
-        picture.setEXIF(new EXIF(
-                "Sony", 
-                34.1, 
-                12.1, 
-                400, 
+        picture.setEXIF(new Exif(
+                "Sony",
+                34.1,
+                12.1,
+                400,
                 true
         ));
-        picture.setIPTC(new IPTC(
-                "Example Caption", 
-                "Example Headline", 
-                "A, number, of, keywords", 
-                "John Photographer", 
+        picture.setIPTC(new Iptc(
+                "Example Caption",
+                "Example Headline",
+                "A, number, of, keywords",
+                "John Photographer",
                 "(c) 2017"
         ));
         dal.save(picture);
@@ -93,8 +102,8 @@ public class SQLiteDALTest {
         picture.setFileName("C:\\imgs\\img_0001.jpg");
         picture.setCamera(null);
         picture.setEXIF(null);
-        dal.save(picture);    
-        
+        dal.save(picture);
+
         PictureModel p = dal.getPicture(1234);
         System.out.println(p);
         assertEquals(p.getID(), 1234);
@@ -117,7 +126,7 @@ public class SQLiteDALTest {
 
         dal.save(p);
         assertEquals(true, dal.containsRowForTable(testID, DBTable.PHOTOGRAPHERS));
-        System.out.println((dal.getPhotographer(testID)));     
+        System.out.println((dal.getPhotographer(testID)));
         dal.deletePhotographer(testID);
         assertEquals(false, dal.containsRowForTable(testID, DBTable.PHOTOGRAPHERS));
     }
@@ -171,7 +180,7 @@ public class SQLiteDALTest {
         });
         assertNotNull(d);
     }
-        
+
     @Test
     public void test_get_pictures_without_search() throws Exception {
         System.out.println(new Object() {
@@ -184,7 +193,7 @@ public class SQLiteDALTest {
         });
         assertNotNull(d);
     }
-    
+
     @Test
     public void test_next_id_for() throws Exception {
         System.out.println(new Object() {

@@ -2,8 +2,6 @@ package DAL;
 
 import Models.Photographer;
 import Models.Picture;
-import Models.EXIF;
-import Models.IPTC;
 import Models.Camera;
 import BIF.SWE2.interfaces.*;
 import BIF.SWE2.interfaces.models.CameraModel;
@@ -11,6 +9,8 @@ import BIF.SWE2.interfaces.models.EXIFModel;
 import BIF.SWE2.interfaces.models.IPTCModel;
 import BIF.SWE2.interfaces.models.PhotographerModel;
 import BIF.SWE2.interfaces.models.PictureModel;
+import Models.Exif;
+import Models.Iptc;
 import static helpers.Helpers.*;
 
 import java.sql.*;
@@ -202,8 +202,8 @@ public class SQLiteDAL implements DataAccessLayer {
 
     private PictureModel toPictureObject(ResultSet result) throws SQLException {
         PictureModel picture = new Picture();
-        picture.setIPTC(new IPTC());
-        picture.setEXIF(new EXIF());
+        picture.setIPTC(new Iptc());
+        picture.setEXIF(new Exif());
         picture.setID(result.getInt("id"));
         picture.setFileName(result.getString("filename"));
         picture.getIPTC().setCaption(result.getString("iptc_caption"));
@@ -316,8 +316,8 @@ public class SQLiteDAL implements DataAccessLayer {
      *
      * @param namePart may contain a name which is searched in the database
      * @param photographerParts may contain photographer information which is searched in the database
-     * @param iptcParts may contain IPTC information which is searched in the database
-     * @param exifParts may contain EXIF information which is searched in the database
+     * @param iptcParts may contain Iptc information which is searched in the database
+     * @param exifParts may contain Exif information which is searched in the database
      * @return a Collection of PictureModel objects which match the filter criteria
      */
     @Override

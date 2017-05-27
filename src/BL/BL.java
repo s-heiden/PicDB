@@ -138,7 +138,7 @@ public final class BL implements BusinessLayer {
     public IPTCModel extractIPTC(String filename) throws FileNotFoundException {
         if (existsInPicturePath(filename)) {
             String randomString = getRandomString(5);
-            IPTCModel iptcModel = new IPTC();
+            IPTCModel iptcModel = new Iptc();
             iptcModel.setByLine("byLine_" + randomString);
             iptcModel.setKeywords("keywords_" + randomString);
             iptcModel.setCopyrightNotice("copyright_" + randomString);
@@ -153,7 +153,7 @@ public final class BL implements BusinessLayer {
     @Override
     public EXIFModel extractEXIF(String filename) throws FileNotFoundException {
         if (Helpers.existsInPicturePath(filename)) {
-            EXIFModel exifModel = new EXIF();
+            EXIFModel exifModel = new Exif();
             exifModel.setExposureProgram(Helpers.randomEnum(ExposurePrograms.class));
             exifModel.setExposureTime(Constants.EXAMPLE_EXPOSURE_TIMES[new Random().nextInt(Constants.EXAMPLE_EXPOSURE_TIMES.length)]);
             exifModel.setFNumber(Constants.EXAMPLE_F_NUMBERS[new Random().nextInt(Constants.EXAMPLE_F_NUMBERS.length)]);

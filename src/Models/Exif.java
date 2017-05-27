@@ -3,9 +3,7 @@ package Models;
 import BIF.SWE2.interfaces.ExposurePrograms;
 import BIF.SWE2.interfaces.models.EXIFModel;
 
-
-public class EXIF implements EXIFModel {
-
+public class Exif implements EXIFModel {
 
     private String make;
     private double fNumber;
@@ -13,18 +11,18 @@ public class EXIF implements EXIFModel {
     private double isoValue;
     private boolean flash;
     private ExposurePrograms exposureProgram = ExposurePrograms.NotDefined;
-    
-    public EXIF() {
+
+    public Exif() {
     }
-    
-    public EXIF(String make, double fNumber, double exposureTime, double isoValue, boolean flash) {
+
+    public Exif(String make, double fNumber, double exposureTime, double isoValue, boolean flash) {
         this.make = make;
         this.fNumber = fNumber;
         this.exposureTime = exposureTime;
         this.isoValue = isoValue;
         this.flash = flash;
     }
-    
+
     /**
      * Name of camera
      */
@@ -105,13 +103,13 @@ public class EXIF implements EXIFModel {
 
     @Override
     public String toString() {
-        return "EXIFModelImpl{" +
-                "make='" + make + '\'' +
-                ", fNumber=" + fNumber +
-                ", exposureTime=" + exposureTime +
-                ", isoValue=" + isoValue +
-                ", flash=" + flash +
-                ", exposureProgram=" + (exposureProgram != null ? exposureProgram : "" ) +
-                '}';
+        return "EXIFModelImpl{"
+                + "make='" + make + '\''
+                + ", fNumber=" + fNumber
+                + ", exposureTime=" + exposureTime
+                + ", isoValue=" + isoValue
+                + ", flash=" + flash
+                + ", exposureProgram=" + (exposureProgram != null ? exposureProgram : "")
+                + '}';
     }
 }
