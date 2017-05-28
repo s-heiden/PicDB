@@ -23,9 +23,6 @@ public class Exif implements EXIFModel {
         this.flash = flash;
     }
 
-    /**
-     * Name of camera
-     */
     @Override
     public String getMake() {
         return make;
@@ -36,9 +33,6 @@ public class Exif implements EXIFModel {
         this.make = make;
     }
 
-    /**
-     * Aperture number
-     */
     @Override
     public double getFNumber() {
         return fNumber;

@@ -13,6 +13,8 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import javafx.scene.Node;
+import javafx.scene.layout.GridPane;
 
 public class Helpers {
 
@@ -75,6 +77,10 @@ public class Helpers {
      public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
         int x = new Random().nextInt(clazz.getEnumConstants().length);
         return clazz.getEnumConstants()[x];
+    }
+
+    public static Node getGridpaneNodeViaRowAndColumn(GridPane gridpane, int row, int column) {
+        return gridpane.getChildren().get(column * Constants.ROWS_PER_METAINFO_GRIDPANE + row);
     }
 }
 

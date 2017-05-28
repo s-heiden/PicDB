@@ -1,6 +1,9 @@
 package controllers;
 
 import BIF.SWE2.interfaces.presentationmodels.MainWindowPresentationModel;
+import BIF.SWE2.interfaces.presentationmodels.PicturePresentationModel;
+import helpers.Constants;
+import helpers.Helpers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,163 +27,82 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
+import javafx.collections.FXCollections;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import viewModels.MainWindowPM;
 
 public class MainWindowController implements Initializable {
 
-    @FXML
-    private GridPane iptc_gridpane;
-    @FXML
-    private GridPane exif_gridpane;
-    @FXML
-    private AnchorPane selectedImagePane;
-    
-    private Set<TextField> iptcTextfields;
-    private Set<TextField> exifTextfields;
     private MainWindowPresentationModel mainWindowPM;
-    
-    @FXML
-    private BorderPane rootPane;
     private Stage primaryStage;
 
-    /**
-     * It is not possible to access fxml elements in controller ctor => use initialize() of Initializable interface
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        mainWindowPM = new MainWindowPM();
-        
-        drawSelectedImage();
-        
-        iptcTextfields = getAllTextFieldsFromGridpane(iptc_gridpane);
-        exifTextfields = getAllTextFieldsFromGridpane(exif_gridpane);
-        
-    }
-
-    private void drawSelectedImage() {        
-        Image selectedImage = new Image(mainWindowPM.getCurrentPicture().getFilePath());
-        ImageView selectedImageView = new ImageView();
-        selectedImageView.setPreserveRatio(true);
-        selectedImageView.setSmooth(true);
-        selectedImageView.setCache(true);
-        selectedImageView.setImage(selectedImage);
-        selectedImageView.fitWidthProperty().bind(selectedImagePane.widthProperty());
-        selectedImagePane.getChildren().add(selectedImageView);       
-    }
-
-    private Set<TextField> getAllTextFieldsFromGridpane(GridPane gridPane) {
-        Set<TextField> textFields = new HashSet<>();
-        for (Node node : gridPane.getChildren()) {
-            if (node instanceof TextField) {
-                textFields.add((TextField) node);
-            }
-        }
-        return textFields;
-    }
-
-    /**
-     * For the node to access the primary stage, getScene() must be called on this node; getScene() however does not
-     * work for Menu Items => => call getScene() on some other node (here: root node)
-     */
-    private Stage getPrimaryStage() {
-        if (primaryStage == null) {
-            primaryStage = (Stage) rootPane.getScene().getWindow();
-        }
-        return primaryStage;
-    }
+    @FXML
+    private GridPane iptcGridpane;
+    @FXML
+    private GridPane exifGridpane;
+    @FXML
+    private AnchorPane selectedImagePane;
+    @FXML
+    private BorderPane rootPane;
+    @FXML
+    private ScrollPane imageNavigationPane;
+    @FXML
+    private HBox searchHBox;
 
     @FXML
-    protected void closeProgram(ActionEvent event) {
+    protected void quitAction(ActionEvent event) {
         getPrimaryStage().close();
     }
 
-    // saves IPTC and EXIF metadata from texts fields of tab panel into DB
     @FXML
-    protected void saveImageMetadata(ActionEvent event) {
-        saveMetadataToDatabase();
-    }
-
-    @FXML
-    public void showHelp(ActionEvent actionEvent) {
-        showDialog("Help", "Visit our help page at: https://github.com/s-heiden/PicDB\n");
+    protected void saveIptcAction(ActionEvent event) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @FXML
-    public void showAbout(ActionEvent actionEvent) {
-        showDialog("About",
-                "PicDB 1.0\n"
-                + "(c) Team\n"
-                + "2017");
+    public void showHelpAction(ActionEvent actionEvent) {
+        showDialog("Help", "Please visit our help page at:\n\nhttps://github.com/s-heiden/PicDB");
     }
 
-    private void showDialog(String title, String dialogTextContent) {
-        final Stage dialog = new Stage();
-//        Modality.APPLICATION_MODAL => no events are processed elsewhere in the program until the user
-//           closes the dialog
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.setTitle(title);
-        dialog.initOwner(getPrimaryStage());
-
-        Text text = new Text(dialogTextContent);
-        VBox dialogVbox = new VBox(20);
-
-        // adjust the content depending on menu item
-        if (title.equals("About")) {
-            Image image = new Image("file:src/resources/logo.jpg");
-            ImageView imageView = new ImageView();
-            imageView.setImage(image);
-            imageView.setFitHeight(100);
-            imageView.setPreserveRatio(true);
-            dialogVbox.getChildren().add(imageView);
-            text.setTextAlignment(TextAlignment.CENTER);
-            dialogVbox.getChildren().add(text);
-        } else if (title.equals("Help")) {
-            ScrollPane scrollPane = new ScrollPane();
-            scrollPane.setPrefHeight(180);
-            text.setWrappingWidth(250);
-            scrollPane.setContent(text);
-            dialogVbox.getChildren().add(scrollPane);
-        }
-
-        Button btnOk = new Button();
-        btnOk.setText("OK");
-        btnOk.setOnAction(e -> {
-            ((Stage) btnOk.getScene().getWindow()).close();
-        });
-        dialogVbox.getChildren().add(btnOk);
-        dialogVbox.setAlignment(Pos.CENTER);
-
-        Scene dialogScene = new Scene(dialogVbox, 300, 250);
-        dialog.setScene(dialogScene);
-        dialog.show();
+    @FXML
+    public void showAboutAction(ActionEvent actionEvent) {
+        showDialog("About", "PicDB 1.0\n(c) Team\n2017");
     }
 
-    public void saveIptc(ActionEvent actionEvent) {
-        saveMetadataToDatabase();
+    @FXML
+    public void resetButtonAction(ActionEvent actionEvent) {
+        TextField searchTF = (TextField) searchHBox.getChildren().get(0);
+        searchTF.setText("");
+        resetImageNavigationPane();
     }
 
-    public void saveExif(ActionEvent actionEvent) {
-        saveMetadataToDatabase();
+    @FXML
+    public void searchButtonAction(ActionEvent actionEvent) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-//    private void makeTextfieldsEditable(Set<TextField> fields, Boolean makeEditable) {
-//        for (TextField textField : fields) {
-//            textField.setDisable(!makeEditable);
-//        }
-//    }
-
-    private void saveMetadataToDatabase() {
-        // TODO: implement
+    @FXML
+    public void generateImageReportAction(ActionEvent actionEvent) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void showPhotographers(ActionEvent actionEvent) {
+    @FXML
+    public void generateTagReportAction(ActionEvent actionEvent) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
+    @FXML
+    public void showPhotographersAction(ActionEvent actionEvent) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/PhotographersView.fxml"));
-        System.out.println(loader.getLocation());
         try {
             Pane mainPane = loader.load();
             Stage stage = new Stage();
@@ -190,5 +112,122 @@ public class MainWindowController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        mainWindowPM = new MainWindowPM();
+
+        drawSelectedImagePane();
+        drawImageNavigationHBox();
+        drawCopyrightComboBox();
+        populateUIFields();
+    }
+
+    private void drawSelectedImagePane() {
+        Image selectedImage = new Image(mainWindowPM.getCurrentPicture().getFilePath());
+        ImageView selectedImageView = new ImageView();
+        selectedImageView.setPreserveRatio(true);
+        selectedImageView.setSmooth(true);
+        selectedImageView.setCache(true);
+        selectedImageView.setImage(selectedImage);
+        selectedImageView.fitWidthProperty().bind(selectedImagePane.widthProperty());
+        selectedImagePane.getChildren().add(selectedImageView);
+    }
+
+    private Stage getPrimaryStage() {
+        if (primaryStage == null) {
+            primaryStage = (Stage) rootPane.getScene().getWindow();
+        }
+        return primaryStage;
+    }
+
+    private void showDialog(String title, String dialogTextContent) {
+        final Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL); // no events are processed until the user closes the dialog
+        dialog.setTitle(title);
+        dialog.initOwner(getPrimaryStage());
+
+        Text text = new Text(dialogTextContent);
+        text.setTextAlignment(TextAlignment.CENTER);
+        VBox dialogVBox = new VBox(20);
+
+        if (title.equals("About")) {
+            Image image = new Image("file:src/resources/logo.jpg");
+            ImageView imageView = new ImageView();
+            imageView.setImage(image);
+            imageView.setFitHeight(100);
+            imageView.setPreserveRatio(true);
+            dialogVBox.getChildren().add(imageView);
+        }
+
+        dialogVBox.getChildren().add(text);
+
+        Button okayButton = new Button();
+        okayButton.setText("OK");
+        okayButton.setOnAction(e -> {
+            ((Stage) okayButton.getScene().getWindow()).close();
+        });
+        dialogVBox.getChildren().add(okayButton);
+        dialogVBox.setAlignment(Pos.CENTER);
+
+        Scene dialogScene = new Scene(dialogVBox, 300, 250);
+        dialog.setScene(dialogScene);
+        dialog.show();
+    }
+
+    private void drawImageNavigationHBox() {
+        for (PicturePresentationModel p : mainWindowPM.getList().getList()) {
+            Image image = new Image(p.getFilePath(), 100, 100, false, false);
+            ImageView imageView = new ImageView();
+            imageView.setSmooth(true);
+            imageView.setCache(true);
+            imageView.setImage(image);
+            HBox hBox = (HBox) imageNavigationPane.getContent();
+            hBox.getChildren().add(imageView);
+        }
+    }
+
+    private void populateUIFields() {
+        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(iptcGridpane, 0, 1))
+                .setText(mainWindowPM.getCurrentPicture().getIPTC().getHeadline());
+
+        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(iptcGridpane, 1, 1))
+                .setText(mainWindowPM.getCurrentPicture().getIPTC().getCaption());
+
+        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(iptcGridpane, 2, 1))
+                .setText(mainWindowPM.getCurrentPicture().getIPTC().getKeywords());
+
+        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(iptcGridpane, 3, 1))
+                .setText(mainWindowPM.getCurrentPicture().getIPTC().getByLine());
+
+        ((ComboBox) Helpers.getGridpaneNodeViaRowAndColumn(iptcGridpane, 4, 1)).setValue(mainWindowPM.getCurrentPicture().getIPTC().getCopyrightNotice());
+
+        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(exifGridpane, 0, 1))
+                .setText(mainWindowPM.getCurrentPicture().getEXIF().getMake());
+
+        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(exifGridpane, 1, 1))
+                .setText(String.valueOf(mainWindowPM.getCurrentPicture().getEXIF().getFNumber()));
+
+        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(exifGridpane, 2, 1))
+                .setText(String.valueOf(mainWindowPM.getCurrentPicture().getEXIF().getExposureTime()));
+
+        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(exifGridpane, 3, 1))
+                .setText(String.valueOf(mainWindowPM.getCurrentPicture().getEXIF().getISOValue()));
+
+        ((CheckBox) Helpers.getGridpaneNodeViaRowAndColumn(exifGridpane, 4, 1))
+                .setSelected(mainWindowPM.getCurrentPicture().getEXIF().getFlash());
+
+    }
+
+    private void drawCopyrightComboBox() {
+        ComboBox comboBox = new ComboBox(
+                FXCollections.observableArrayList(
+                        mainWindowPM.getCurrentPicture().getIPTC().getCopyrightNotices()));
+        iptcGridpane.add(comboBox, 1, 4);
+    }
+
+    private void resetImageNavigationPane() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -141,7 +141,7 @@ public final class BL implements BusinessLayer {
             IPTCModel iptcModel = new Iptc();
             iptcModel.setByLine("byLine_" + randomString);
             iptcModel.setKeywords("keywords_" + randomString);
-            iptcModel.setCopyrightNotice("copyright_" + randomString);
+            iptcModel.setCopyrightNotice(Constants.COPYRIGHT_NOTICES.toArray()[new Random().nextInt(Constants.COPYRIGHT_NOTICES.size())].toString());
             iptcModel.setHeadline("headline_" + randomString);
             iptcModel.setCaption("caption_" + randomString);
             return iptcModel;
