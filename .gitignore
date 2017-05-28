@@ -5,3 +5,7 @@ dist/
 nbdist/
 .nb-gradle/
 
+#intellij idea stuff
+out/
+.idea/
+
