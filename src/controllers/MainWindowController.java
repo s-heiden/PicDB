@@ -9,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -27,18 +26,16 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.ResourceBundle;
-import java.util.Set;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import viewModels.MainWindowPM;
+import viewModels.PictureListPM;
 
 public class MainWindowController implements Initializable {
 
@@ -153,7 +150,8 @@ public class MainWindowController implements Initializable {
         VBox dialogVBox = new VBox(20);
 
         if (title.equals("About")) {
-            Image image = new Image("file:src/resources/logo.jpg");
+
+            Image image = new Image(Constants.LOGO_PATH);
             ImageView imageView = new ImageView();
             imageView.setImage(image);
             imageView.setFitHeight(100);
@@ -183,6 +181,11 @@ public class MainWindowController implements Initializable {
             imageView.setSmooth(true);
             imageView.setCache(true);
             imageView.setImage(image);
+            imageView.setOnMouseClicked((MouseEvent t) -> {
+                ((PictureListPM) mainWindowPM.getList()).setCurrentIndex(p.getID());
+                drawSelectedImagePane();
+                populateUIFields();
+            });
             HBox hBox = (HBox) imageNavigationPane.getContent();
             hBox.getChildren().add(imageView);
         }
@@ -224,6 +227,7 @@ public class MainWindowController implements Initializable {
         ComboBox comboBox = new ComboBox(
                 FXCollections.observableArrayList(
                         mainWindowPM.getCurrentPicture().getIPTC().getCopyrightNotices()));
+        comboBox.setStyle("-fx-font: 11px \"System\";");
         iptcGridpane.add(comboBox, 1, 4);
     }
 

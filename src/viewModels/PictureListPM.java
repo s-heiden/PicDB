@@ -64,6 +64,10 @@ public class PictureListPM implements PictureListPresentationModel {
     public int getCurrentIndex() {
         return currentPictureIndex + 1;
     }
+    
+    public void setCurrentIndex(int index){
+        this.currentPictureIndex = index;
+    }
 
     /**
      * {CurrentIndex} of {Count}
