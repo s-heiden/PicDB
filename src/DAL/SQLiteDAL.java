@@ -2,6 +2,7 @@ package DAL;
 
 import Models.Photographer;
 import Models.Picture;
+import DAL.DBSchema.*;
 import Models.Camera;
 import BIF.SWE2.interfaces.*;
 import BIF.SWE2.interfaces.models.CameraModel;
@@ -19,50 +20,51 @@ import java.util.Collection;
 
 public class SQLiteDAL implements DataAccessLayer {
 
-//    private static final String DATABASE_URL = "jdbc:sqlite:picdb.db";
     private static final String SQLITE_JDBC = "org.sqlite.JDBC";
     private Connection connection;
 
     private static final String CREATE_TABLE_PICTURES =
             "CREATE TABLE IF NOT EXISTS " + DBSchema.Pictures.TABLE_NAME + " (" +
-            DBSchema.Pictures.COLUMN_PICTURES_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            DBSchema.Pictures.COLUMN_PICTURES_CAMERAID + " INTEGER," +
-            DBSchema.Pictures.COLUMN_PICTURES_FILENAME + " VARCHAR(256)," +
-            DBSchema.Pictures.COLUMN_PICTURES_IPTC_CAPTION + " VARCHAR(256)," +
-            DBSchema.Pictures.COLUMN_PICTURES_IPTC_HEADLINE + " VARCHAR(256)," +
-            DBSchema.Pictures.COLUMN_PICTURES_IPTC_KEYWORDS + " VARCHAR(256)," +
-            DBSchema.Pictures.COLUMN_PICTURES_IPTC_BYLINE + " VARCHAR(256)," +
-            DBSchema.Pictures.COLUMN_PICTURES_COPYRIGHTNOTICE + " VARCHAR(256)," +
-            DBSchema.Pictures.COLUMN_PICTURES_EXIF_MAKE + " VARCHAR(256)," +
-            DBSchema.Pictures.COLUMN_PICTURES_EXIF_FNUMBER + " DOUBLE," +
-            DBSchema.Pictures.COLUMN_PICTURES_EXIF_EXPOSURETIME + " DOUBLE," +
-            DBSchema.Pictures.COLUMN_PICTURES_EXIF_ISOVALUE + " DOUBLE," +
-            DBSchema.Pictures.COLUMN_PICTURES_EXIF_FLASH + " BOOLEAN," +
-            DBSchema.Pictures.COLUMN_PICTURES_EXIF_EXPOSUREPROGRAM + " INT)";
+                    Pictures.COLUMN_PICTURES_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    Pictures.COLUMN_PICTURES_CAMERAID + " INTEGER," +
+                    Pictures.COLUMN_PICTURES_FILENAME + " VARCHAR(256)," +
+                    Pictures.COLUMN_PICTURES_IPTC_CAPTION + " VARCHAR(256)," +
+                    Pictures.COLUMN_PICTURES_IPTC_HEADLINE + " VARCHAR(256)," +
+                    Pictures.COLUMN_PICTURES_IPTC_KEYWORDS + " VARCHAR(256)," +
+                    Pictures.COLUMN_PICTURES_IPTC_BYLINE + " VARCHAR(256)," +
+                    Pictures.COLUMN_PICTURES_COPYRIGHTNOTICE + " VARCHAR(256)," +
+                    Pictures.COLUMN_PICTURES_EXIF_MAKE + " VARCHAR(256)," +
+                    Pictures.COLUMN_PICTURES_EXIF_FNUMBER + " DOUBLE," +
+                    Pictures.COLUMN_PICTURES_EXIF_EXPOSURETIME + " DOUBLE," +
+                    Pictures.COLUMN_PICTURES_EXIF_ISOVALUE + " DOUBLE," +
+                    Pictures.COLUMN_PICTURES_EXIF_FLASH + " BOOLEAN," +
+                    Pictures.COLUMN_PICTURES_EXIF_EXPOSUREPROGRAM + " INT);";
 
     private static final String CREATE_TABLE_CAMERAS =
-            "CREATE TABLE IF NOT EXISTS " + DBSchema.Cameras.TABLE_NAME + " (" +
-            DBSchema.Cameras.COLUMN_CAMERAS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    DBSchema.Cameras.COLUMN_CAMERAS_PRODUCER + " VARCHAR(256)," +
-                    DBSchema.Cameras.COLUMN_CAMERAS_BOUGHTON + " LONG," +
-                    DBSchema.Cameras.COLUMN_CAMERAS_NOTES + " VARCHAR(512)," +
-                    DBSchema.Cameras.COLUMN_CAMERAS_ISOLIMIT_GOOD + " DOUBLE," +
-                    DBSchema.Cameras.COLUMN_CAMERAS_ISOLIMIT_ACCEPTABLE + " DOUBLE)";
+            "CREATE TABLE IF NOT EXISTS " + Cameras.TABLE_NAME + " (" +
+                    Cameras.COLUMN_CAMERAS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    Cameras.COLUMN_CAMERAS_PRODUCER + " VARCHAR(256)," +
+                    Cameras.COLUMN_CAMERAS_MAKE + " VARCHAR(256)," +
+                    Cameras.COLUMN_CAMERAS_BOUGHTON + " LONG," +
+                    Cameras.COLUMN_CAMERAS_NOTES + " VARCHAR(512)," +
+                    Cameras.COLUMN_CAMERAS_ISOLIMIT_GOOD + " DOUBLE," +
+                    Cameras.COLUMN_CAMERAS_ISOLIMIT_ACCEPTABLE + " DOUBLE);";
 
     private static final String CREATE_TABLE_PHOTOGRAPHERS =
-            "CREATE TABLE IF NOT EXISTS " + DBSchema.Photographers.TABLE_NAME + " (" +
-                    DBSchema.Photographers.COLUMN_PHOTOGRAPHERS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    DBSchema.Photographers.COLUMN_PHOTOGRAPHERS_FIRST_NAME + " VARCHAR(256)," +
-                    DBSchema.Photographers.COLUMN_PHOTOGRAPHERS_LAST_NAME + " VARCHAR(256)," +
-                    DBSchema.Photographers.COLUMN_PHOTOGRAPHERS_BIRTHDAY + " LONG," +
-                    DBSchema.Photographers.COLUMN_PHOTOGRAPHERS_NOTES + " VARCHAR(512)";
+            "CREATE TABLE IF NOT EXISTS " + Photographers.TABLE_NAME + " (" +
+                    Photographers.COLUMN_PHOTOGRAPHERS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    Photographers.COLUMN_PHOTOGRAPHERS_FIRST_NAME + " VARCHAR(256)," +
+                    Photographers.COLUMN_PHOTOGRAPHERS_LAST_NAME + " VARCHAR(256)," +
+                    Photographers.COLUMN_PHOTOGRAPHERS_BIRTHDAY + " LONG," +
+                    Photographers.COLUMN_PHOTOGRAPHERS_NOTES + " VARCHAR(512));";
 
     /**
      * Establishes the connection, sets up the database if there are no tables.
      */
     public SQLiteDAL() {
+        System.out.println("creating SQLiteDAL()");
         openDBConnection();
-        setupDatabase();
+        setupDatabase();;
     }
 
     /**
@@ -101,6 +103,7 @@ public class SQLiteDAL implements DataAccessLayer {
             statement.executeUpdate(CREATE_TABLE_PICTURES);
             statement.executeUpdate(CREATE_TABLE_CAMERAS);
             statement.executeUpdate(CREATE_TABLE_PHOTOGRAPHERS);
+            System.out.println("setupDatabase()");
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
@@ -187,11 +190,11 @@ public class SQLiteDAL implements DataAccessLayer {
 
     private PhotographerModel toPhotographerObject(ResultSet rs) throws SQLException {
         PhotographerModel photographer = new Photographer();
-        photographer.setID(rs.getInt("id"));
-        photographer.setFirstName(rs.getString("first_name"));
-        photographer.setLastName(rs.getString("last_name"));
-        photographer.setBirthDay(toLocalDate(rs.getLong("birthday")));
-        photographer.setNotes(rs.getString("notes"));
+        photographer.setID(rs.getInt(Photographers.COLUMN_PHOTOGRAPHERS_ID));
+        photographer.setFirstName(rs.getString(Photographers.COLUMN_PHOTOGRAPHERS_FIRST_NAME));
+        photographer.setLastName(rs.getString(Photographers.COLUMN_PHOTOGRAPHERS_LAST_NAME));
+        photographer.setBirthDay(toLocalDate(rs.getLong(Photographers.COLUMN_PHOTOGRAPHERS_BIRTHDAY)));
+        photographer.setNotes(rs.getString(Photographers.COLUMN_PHOTOGRAPHERS_NOTES));
         return photographer;
     }
 
@@ -332,11 +335,11 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public Collection<PhotographerModel> getPhotographers() {
-        Collection<PhotographerModel> cameraModels = new ArrayList<>();
+        Collection<PhotographerModel> photographerModels = new ArrayList<>();
         getObjectsFrom(DBTable.PHOTOGRAPHERS).forEach((o) -> {
-            cameraModels.add((PhotographerModel) o);
+            photographerModels.add((PhotographerModel) o);
         });
-        return cameraModels;
+        return photographerModels;
     }
 
     /**
@@ -410,7 +413,7 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     @Override
     public Collection<CameraModel> getCameras() {
-        Collection cameraModels = new ArrayList<>();
+        Collection<CameraModel> cameraModels = new ArrayList<>();
         getObjectsFrom(DBTable.CAMERAS).forEach((o) -> {
             cameraModels.add((CameraModel) o);
         });

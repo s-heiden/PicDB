@@ -3,7 +3,7 @@ package DAL;
 
 public final class DBSchema {
 
-    public static final String DATABASE_URL = "jdbc:sqlite:picdb.db";
+    public static final String DATABASE_URL = "jdbc:sqlite:picdb2.db";
 
     // private ctor to prevent instantiation
     private DBSchema() {}
