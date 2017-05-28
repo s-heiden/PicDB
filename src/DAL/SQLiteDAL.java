@@ -19,9 +19,43 @@ import java.util.Collection;
 
 public class SQLiteDAL implements DataAccessLayer {
 
-    private static final String DATABASE_URL = "jdbc:sqlite:picdb.db";
+//    private static final String DATABASE_URL = "jdbc:sqlite:picdb.db";
     private static final String SQLITE_JDBC = "org.sqlite.JDBC";
     private Connection connection;
+
+    private static final String CREATE_TABLE_PICTURES =
+            "CREATE TABLE IF NOT EXISTS " + DBSchema.Pictures.TABLE_NAME + " (" +
+            DBSchema.Pictures.COLUMN_PICTURES_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            DBSchema.Pictures.COLUMN_PICTURES_CAMERAID + " INTEGER," +
+            DBSchema.Pictures.COLUMN_PICTURES_FILENAME + " VARCHAR(256)," +
+            DBSchema.Pictures.COLUMN_PICTURES_IPTC_CAPTION + " VARCHAR(256)," +
+            DBSchema.Pictures.COLUMN_PICTURES_IPTC_HEADLINE + " VARCHAR(256)," +
+            DBSchema.Pictures.COLUMN_PICTURES_IPTC_KEYWORDS + " VARCHAR(256)," +
+            DBSchema.Pictures.COLUMN_PICTURES_IPTC_BYLINE + " VARCHAR(256)," +
+            DBSchema.Pictures.COLUMN_PICTURES_COPYRIGHTNOTICE + " VARCHAR(256)," +
+            DBSchema.Pictures.COLUMN_PICTURES_EXIF_MAKE + " VARCHAR(256)," +
+            DBSchema.Pictures.COLUMN_PICTURES_EXIF_FNUMBER + " DOUBLE," +
+            DBSchema.Pictures.COLUMN_PICTURES_EXIF_EXPOSURETIME + " DOUBLE," +
+            DBSchema.Pictures.COLUMN_PICTURES_EXIF_ISOVALUE + " DOUBLE," +
+            DBSchema.Pictures.COLUMN_PICTURES_EXIF_FLASH + " BOOLEAN," +
+            DBSchema.Pictures.COLUMN_PICTURES_EXIF_EXPOSUREPROGRAM + " INT)";
+
+    private static final String CREATE_TABLE_CAMERAS =
+            "CREATE TABLE IF NOT EXISTS " + DBSchema.Cameras.TABLE_NAME + " (" +
+            DBSchema.Cameras.COLUMN_CAMERAS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    DBSchema.Cameras.COLUMN_CAMERAS_PRODUCER + " VARCHAR(256)," +
+                    DBSchema.Cameras.COLUMN_CAMERAS_BOUGHTON + " LONG," +
+                    DBSchema.Cameras.COLUMN_CAMERAS_NOTES + " VARCHAR(512)," +
+                    DBSchema.Cameras.COLUMN_CAMERAS_ISOLIMIT_GOOD + " DOUBLE," +
+                    DBSchema.Cameras.COLUMN_CAMERAS_ISOLIMIT_ACCEPTABLE + " DOUBLE)";
+
+    private static final String CREATE_TABLE_PHOTOGRAPHERS =
+            "CREATE TABLE IF NOT EXISTS " + DBSchema.Photographers.TABLE_NAME + " (" +
+                    DBSchema.Photographers.COLUMN_PHOTOGRAPHERS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    DBSchema.Photographers.COLUMN_PHOTOGRAPHERS_FIRST_NAME + " VARCHAR(256)," +
+                    DBSchema.Photographers.COLUMN_PHOTOGRAPHERS_LAST_NAME + " VARCHAR(256)," +
+                    DBSchema.Photographers.COLUMN_PHOTOGRAPHERS_BIRTHDAY + " LONG," +
+                    DBSchema.Photographers.COLUMN_PHOTOGRAPHERS_NOTES + " VARCHAR(512)";
 
     /**
      * Establishes the connection, sets up the database if there are no tables.
@@ -38,7 +72,7 @@ public class SQLiteDAL implements DataAccessLayer {
         if (connection == null) {
             try {
                 Class.forName(SQLITE_JDBC);
-                connection = DriverManager.getConnection(DATABASE_URL);
+                connection = DriverManager.getConnection(DBSchema.DATABASE_URL);
             } catch (SQLException | ClassNotFoundException s) {
                 System.err.println(s.getClass().getName() + ": " + s.getMessage());
             }
@@ -64,48 +98,9 @@ public class SQLiteDAL implements DataAccessLayer {
      */
     private void setupDatabase() {
         try (Statement statement = connection.createStatement()) {
-
-            final String sqlPictures = "CREATE TABLE IF NOT EXISTS pictures\n"
-                    + "(\n"
-                    + "    id INTEGER PRIMARY KEY,\n"
-                    + "    camera_id INTEGER,\n"
-                    + "    filename VARCHAR(256),\n"
-                    + "    iptc_caption VARCHAR(256),\n"
-                    + "    iptc_headline VARCHAR(256),\n"
-                    + "    iptc_keywords VARCHAR(256),\n"
-                    + "    iptc_byline VARCHAR(256),\n"
-                    + "    iptc_copyrightnotice VARCHAR(256),\n"
-                    + "    exif_make VARCHAR(256),\n"
-                    + "    exif_fnumber DOUBLE,\n"
-                    + "    exif_exposuretime DOUBLE,\n"
-                    + "    exif_isovalue DOUBLE,\n"
-                    + "    exif_flash BOOLEAN\n,"
-                    + "    exif_exposureprogram INT\n"
-                    + ")";
-            statement.executeUpdate(sqlPictures);
-
-            final String sqlCameras = "CREATE TABLE IF NOT EXISTS cameras\n"
-                    + "(\n"
-                    + "    id INTEGER PRIMARY KEY,\n"
-                    + "    producer VARCHAR(256),\n"
-                    + "    make VARCHAR(256),\n"
-                    + "    bought_on LONG,\n"
-                    + "    notes VARCHAR(512),\n"
-                    + "    iso_limit_good DOUBLE,\n"
-                    + "    iso_limit_acceptable DOUBLE\n"
-                    + ")";
-            statement.executeUpdate(sqlCameras);
-
-            final String sqlPhotographers = "CREATE TABLE IF NOT EXISTS photographers\n"
-                    + "(\n"
-                    + "    id INTEGER PRIMARY KEY,\n"
-                    + "    first_name VARCHAR(256),\n"
-                    + "    last_name VARCHAR(256),\n"
-                    + "    birthday LONG,\n"
-                    + "    notes VARCHAR(512)\n"
-                    + ")";
-            statement.executeUpdate(sqlPhotographers);
-
+            statement.executeUpdate(CREATE_TABLE_PICTURES);
+            statement.executeUpdate(CREATE_TABLE_CAMERAS);
+            statement.executeUpdate(CREATE_TABLE_PHOTOGRAPHERS);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
