@@ -3,6 +3,7 @@ package controllers;
 import BIF.SWE2.interfaces.BusinessLayer;
 import BIF.SWE2.interfaces.models.IPTCModel;
 import BIF.SWE2.interfaces.models.PictureModel;
+import BIF.SWE2.interfaces.presentationmodels.IPTCPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.MainWindowPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.PicturePresentationModel;
 import BL.BL;
@@ -40,10 +41,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import viewModels.MainWindowPM;
 import viewModels.PictureListPM;
+import viewModels.PicturePM;
 
 public class MainWindowController implements Initializable {
 
-    private BusinessLayer bl;
     private MainWindowPresentationModel mainWindowPM;
     private Stage primaryStage;
 
@@ -67,19 +68,25 @@ public class MainWindowController implements Initializable {
 
     @FXML
     protected void saveIptcAction(ActionEvent event) {
-        PictureModel picture = null;
+        // TODO: (nice to have) refactor and simplify
+        
+        PictureModel newPictureModel = null;
+        IPTCPresentationModel iptcPM = mainWindowPM.getCurrentPicture().getIPTC();
         try {
-            picture = bl.getPicture(mainWindowPM.getCurrentPicture().getID());
+            // a new instance is generated from the database serving as a prototype for the saving action
+            newPictureModel = BL.getInstance().getPicture(mainWindowPM.getCurrentPicture().getID());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (picture != null) {
-            IPTCModel iptc = picture.getIPTC();
+        if (newPictureModel != null) {
+            IPTCModel iptc = newPictureModel.getIPTC();
             String headlineString = ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 0, 1)).getText();
             String captionString = ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 1, 1)).getText();
             String keywordsString = ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 2, 1)).getText();
             String byLineString = ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 3, 1)).getText();
             String copyrightString = (String) ((ComboBox) Helpers.getGridpaneNodeAt(iptcGridpane, 4, 1)).getSelectionModel().getSelectedItem();
+            
+            // the prototype we created earlier is updated
             if (iptc != null) {
                 iptc.setHeadline(headlineString);
                 iptc.setCaption(captionString);
@@ -87,22 +94,22 @@ public class MainWindowController implements Initializable {
                 iptc.setByLine(byLineString);
                 iptc.setCopyrightNotice(copyrightString);
             }
-//            else {
-//                picture.setIPTC(new Iptc(
-//                        captionString,
-//                        headlineString,
-//                        keywordsString,
-//                        byLineString,
-//                        copyrightString
-//                ));
-//            }
+            
+            // updating the presentation model
+            if (iptcPM != null) {
+                iptcPM.setHeadline(headlineString);
+                iptcPM.setCaption(captionString);
+                iptcPM.setKeywords(keywordsString);
+                iptcPM.setByLine(byLineString);
+                iptcPM.setCopyrightNotice(copyrightString);
+            }
         }
         try {
-            bl.save(picture);
+            // save the updated prototype to the database
+            BL.getInstance().save(newPictureModel);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @FXML
@@ -153,7 +160,6 @@ public class MainWindowController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        bl = new BL();
         mainWindowPM = new MainWindowPM();
 
         drawSelectedImagePane();
@@ -186,7 +192,8 @@ public class MainWindowController implements Initializable {
         ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 3, 1))
                 .setText(mainWindowPM.getCurrentPicture().getIPTC().getByLine());
 
-        ((ComboBox) Helpers.getGridpaneNodeAt(iptcGridpane, 4, 1)).setValue(mainWindowPM.getCurrentPicture().getIPTC().getCopyrightNotice());
+        ((ComboBox) Helpers.getGridpaneNodeAt(iptcGridpane, 4, 1))
+                .setValue(mainWindowPM.getCurrentPicture().getIPTC().getCopyrightNotice());
 
         ((TextField) Helpers.getGridpaneNodeAt(exifGridpane, 0, 1))
                 .setText(mainWindowPM.getCurrentPicture().getEXIF().getMake());
