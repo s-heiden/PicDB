@@ -1,13 +1,18 @@
 package viewModels;
 
+import BIF.SWE2.interfaces.BusinessLayer;
 import BIF.SWE2.interfaces.presentationmodels.SearchPresentationModel;
 import BL.BL;
 
 public class SearchPM implements SearchPresentationModel {
 
     private String searchText = "";
+    private static BusinessLayer bl;
 
     public SearchPM() {
+        if (bl == null) {
+            bl = BL.getInstance();
+        }
     }
 
     @Override
@@ -30,7 +35,7 @@ public class SearchPM implements SearchPresentationModel {
         int count = 0;
         try {
             // TODO: adapt to account for photographer, iptc, exif
-            count = new BL().getPictures(searchText, null, null, null).size();
+            count = bl.getPictures(searchText, null, null, null).size();
         } catch (Exception e) {
             e.printStackTrace();
         }
