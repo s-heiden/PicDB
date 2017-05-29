@@ -28,8 +28,7 @@ public class BLTest {
     public void bl_should_return_Pictures() throws Exception {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
-        
-        BL bl = new BL();
+        BL bl = BL.getInstance();
         assertNotNull("getBusinessLayer", bl);
         Collection<PictureModel> lst = bl.getPictures(null, null, null, null);
         assertNotNull("bl.getPictures", lst);
@@ -44,7 +43,7 @@ public class BLTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
         
-        BL bl = new BL();
+        BL bl = BL.getInstance();
         assertNotNull("getBusinessLayer", bl);
         Collection<PhotographerModel> lst = bl.getPhotographers();
         assertNotNull("bl.getPhotographers", lst);
@@ -56,7 +55,7 @@ public class BLTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
         
-        BL bl = new BL();
+        BL bl = BL.getInstance();
         assertNotNull("getBusinessLayer", bl);
         EXIFModel mdl = bl.extractEXIF("Img1.jpg");
         assertNotNull("bl.ExtractEXIF", mdl);
@@ -71,7 +70,7 @@ public class BLTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
         
-        BL bl = new BL();
+        BL bl = BL.getInstance();
         assertNotNull("getBusinessLayer", bl);
         Collection<CameraModel> lst = bl.getCameras();
         assertNotNull("bl.getCameras", lst);
@@ -83,7 +82,7 @@ public class BLTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
         
-        BL bl = new BL();     
+        BL bl = BL.getInstance();
         assertNotNull("getBusinessLayer", bl);
         CameraModel obj = bl.getCamera(1);
         assertNotNull("bl.getCamera", obj);
