@@ -60,14 +60,6 @@ public class PhotographersController  implements Initializable {
         }
 
         showAllPhotographers();
-
-        // show
-
-//        List<PhotographerPresentationModel> list = photographerList.getList();
-//        for (PhotographerPresentationModel p : list) {
-//            System.out.println("Ph: " + p.getFirstName());
-//        }
-
     }
 
 
@@ -82,6 +74,7 @@ public class PhotographersController  implements Initializable {
     }
 
     public void savePhotographerData(ActionEvent actionEvent) {
+        // save into DB
         makeTextfieldsEditable(false);
         String firstName = vorname_text.getText();
         String lastName = nachname_text.getText();
@@ -105,6 +98,11 @@ public class PhotographersController  implements Initializable {
         } else {
             System.out.println("Photographer not valid");
         }
+
+        // save into list
+        photographerList.addNewPhotographer(photographerPM);
+        // show in the gui list
+        showAllPhotographers();
     }
 
     public void deletePhotographer(ActionEvent actionEvent) {

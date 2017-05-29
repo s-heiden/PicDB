@@ -37,4 +37,8 @@ public class PhotographerListPM implements PhotographerListPresentationModel {
     public PhotographerPresentationModel getCurrentPhotographer() {
         return photographerPMs.get(currentPhotographerIndex);
     }
+
+    public void addNewPhotographer(PhotographerPresentationModel photographerPM) {
+        photographerPMs.add(photographerPM);
+    }
 }
