@@ -43,11 +43,7 @@
     <center>
         <ScrollPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
 
-            <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0">
-
-                <Label layoutX="21.0" layoutY="14.0" text="Photographer1" />
-                <Label layoutX="21.0" layoutY="36.0" text="Photographer2" />
-
+            <AnchorPane fx:id="listAnchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0">
             </AnchorPane>
 
             <BorderPane.margin>

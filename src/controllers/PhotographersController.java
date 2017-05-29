@@ -2,36 +2,39 @@ package controllers;
 
 import BIF.SWE2.interfaces.BusinessLayer;
 import BIF.SWE2.interfaces.models.PhotographerModel;
+import BIF.SWE2.interfaces.presentationmodels.PhotographerPresentationModel;
 import BL.BL;
 import Models.Photographer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import viewModels.PhotographerListPM;
 import viewModels.PhotographerPM;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 public class PhotographersController  implements Initializable {
 
     private Set<Node> dataEntryFields = new HashSet<>();
     private static BusinessLayer bl;
+    private static PhotographerListPM photographerList;
 
     @FXML private VBox person_data_vbox;
     @FXML private TextField vorname_text;
     @FXML private TextField nachname_text;
     @FXML private TextField geburtstag_text;
     @FXML private TextArea notizen;
+    @FXML private AnchorPane listAnchorPane;
 
 
     /**
@@ -44,6 +47,27 @@ public class PhotographersController  implements Initializable {
         if (bl == null) {
             bl = BL.getInstance();
         }
+
+        // get all photographers from DB into the photographerList
+        List<PhotographerModel> photographerModels = null;
+        try {
+            photographerModels = (List) bl.getPhotographers();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (photographerList == null) {
+            photographerList = PhotographerListPM.getInstance(photographerModels);
+        }
+
+        showAllPhotographers();
+
+        // show
+
+//        List<PhotographerPresentationModel> list = photographerList.getList();
+//        for (PhotographerPresentationModel p : list) {
+//            System.out.println("Ph: " + p.getFirstName());
+//        }
+
     }
 
 
@@ -112,6 +136,19 @@ public class PhotographersController  implements Initializable {
     private LocalDate parseDate(String dateString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyy"); // 01.12.2014
         return LocalDate.parse(dateString, formatter); // 2014-12-01
+    }
+
+    private void showAllPhotographers() {
+        double layoutY = 10;
+        List<PhotographerPresentationModel> list = photographerList.getList();
+        for (PhotographerPresentationModel p : list) {
+            String labelText = p.getLastName() + " " + p.getFirstName();
+            Label label = new Label(labelText);
+            listAnchorPane.getChildren().add(label);
+            label.setLayoutX(20);
+            label.setLayoutY(layoutY);
+            layoutY += 20;
+        }
     }
 }
 
