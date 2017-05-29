@@ -50,7 +50,7 @@ public class PhotographersController  implements Initializable {
     // ---------------- button actions ----------------------------------
 
     public void addNewPhotographer() {
-        
+
     }
 
     public void editPhotographer(ActionEvent actionEvent) {
@@ -65,16 +65,16 @@ public class PhotographersController  implements Initializable {
         String notes = notizen.getText();
         System.out.println(firstName);
 
-        Photographer photographer = new Photographer();
-        photographer.setFirstName(firstName);
-        photographer.setLastName(lastName);
-        photographer.setBirthDay(parseDate(birthday));
-        photographer.setNotes(notes);
+        Photographer photographerM = new Photographer();
+        PhotographerPM photographerPM = new PhotographerPM(photographerM);
+        photographerPM.setFirstName(firstName);
+        photographerPM.setLastName(lastName);
+        photographerPM.setBirthDay(parseDate(birthday));
+        photographerPM.setNotes(notes);
 
-        PhotographerPM photographerPM = new PhotographerPM(photographer);
         if(photographerPM.isValid()) {
             try {
-                bl.save(photographer);
+                bl.save(photographerM);
             } catch (Exception e) {
                 e.printStackTrace();
             }
