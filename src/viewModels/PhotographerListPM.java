@@ -11,7 +11,7 @@ import java.util.List;
 public class PhotographerListPM implements PhotographerListPresentationModel {
 
     private List<PhotographerPresentationModel> photographerPMs;
-    private int currentPhotographerIndex = 0;
+    private int currentPhotographerIndex = -1;
     private static PhotographerListPM photographerListPMInstance;
 
     public static PhotographerListPM getInstance(List<PhotographerModel> photographers) {
@@ -35,7 +35,12 @@ public class PhotographerListPM implements PhotographerListPresentationModel {
 
     @Override
     public PhotographerPresentationModel getCurrentPhotographer() {
+        System.out.println("currentPhotographerIndex: " + currentPhotographerIndex);
         return photographerPMs.get(currentPhotographerIndex);
+    }
+
+    public void setCurrentPhotographerIndex(int id) {
+        currentPhotographerIndex = id;
     }
 
     public void addNewPhotographer(PhotographerPresentationModel photographerPM) {

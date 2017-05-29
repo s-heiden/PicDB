@@ -9,9 +9,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -28,6 +30,7 @@ public class PhotographersController  implements Initializable {
     private Set<Node> dataEntryFields = new HashSet<>();
     private static BusinessLayer bl;
     private static PhotographerListPM photographerList;
+    private boolean isPhotographerNew = false;
 
     @FXML private VBox person_data_vbox;
     @FXML private TextField vorname_text;
@@ -35,7 +38,10 @@ public class PhotographersController  implements Initializable {
     @FXML private TextField geburtstag_text;
     @FXML private TextArea notizen;
     @FXML private AnchorPane listAnchorPane;
-
+    @FXML private Button editButton;
+    @FXML private Button saveButton;
+    @FXML private Button deleteButton;
+    @FXML private Button newButton;
 
     /**
      * It is not possible to access fxml elements in controller ctor
@@ -48,7 +54,7 @@ public class PhotographersController  implements Initializable {
             bl = BL.getInstance();
         }
 
-        // get all photographers from DB into the photographerList
+        // fetch all photographers from DB into the photographerList
         List<PhotographerModel> photographerModels = null;
         try {
             photographerModels = (List) bl.getPhotographers();
@@ -59,31 +65,44 @@ public class PhotographersController  implements Initializable {
             photographerList = PhotographerListPM.getInstance(photographerModels);
         }
 
-        showAllPhotographers();
+        showPhotographersList();
+        makeTextfieldsEditable(false);
+
+        editButton.setDisable(true);
+        saveButton.setDisable(true);
+        deleteButton.setDisable(true);
     }
 
 
     // ---------------- button actions ----------------------------------
 
+    // NEW
     public void addNewPhotographer() {
-
+        isPhotographerNew = true;
     }
 
+    // EDIT
     public void editPhotographer(ActionEvent actionEvent) {
         makeTextfieldsEditable(true);
+        newButton.setDisable(true);
+        saveButton.setDisable(false);
     }
 
+    // SAVE
     public void savePhotographerData(ActionEvent actionEvent) {
-        // save into DB
+        PhotographerPM photographerPM;
+        if(isPhotographerNew) {
+            photographerPM = new PhotographerPM(new Photographer());
+        } else {
+            photographerPM = (PhotographerPM) photographerList.getCurrentPhotographer();
+        }
+
         makeTextfieldsEditable(false);
         String firstName = vorname_text.getText();
         String lastName = nachname_text.getText();
         String birthday = geburtstag_text.getText();
         String notes = notizen.getText();
-        System.out.println(firstName);
 
-        Photographer photographerM = new Photographer();
-        PhotographerPM photographerPM = new PhotographerPM(photographerM);
         photographerPM.setFirstName(firstName);
         photographerPM.setLastName(lastName);
         photographerPM.setBirthDay(parseDate(birthday));
@@ -91,7 +110,7 @@ public class PhotographersController  implements Initializable {
 
         if(photographerPM.isValid()) {
             try {
-                bl.save(photographerM);
+                bl.save(photographerPM.getPhotographerModel());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -99,12 +118,17 @@ public class PhotographersController  implements Initializable {
             System.out.println("Photographer not valid");
         }
 
-        // save into list
-        photographerList.addNewPhotographer(photographerPM);
-        // show in the gui list
-        showAllPhotographers();
+        if(isPhotographerNew) { // save into list
+            photographerList.addNewPhotographer(photographerPM);
+            isPhotographerNew = false;
+        }
+        listAnchorPane.getChildren().clear();
+        showPhotographersList();
+
+        saveButton.setDisable(true);
     }
 
+    // DELETE
     public void deletePhotographer(ActionEvent actionEvent) {
         // TODO: implement
     }
@@ -132,21 +156,48 @@ public class PhotographersController  implements Initializable {
     }
 
     private LocalDate parseDate(String dateString) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyy"); // 01.12.2014
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // 2014-12-01
         return LocalDate.parse(dateString, formatter); // 2014-12-01
     }
 
-    private void showAllPhotographers() {
+    private void showPhotographersList() {
         double layoutY = 10;
         List<PhotographerPresentationModel> list = photographerList.getList();
+        int i = 0;
         for (PhotographerPresentationModel p : list) {
             String labelText = p.getLastName() + " " + p.getFirstName();
             Label label = new Label(labelText);
-            listAnchorPane.getChildren().add(label);
-            label.setLayoutX(20);
             label.setLayoutY(layoutY);
+            label.setId(Integer.toString(i));
+            label.setStyle("-fx-padding: 3;");
+            label.setOnMouseClicked((MouseEvent event) -> {
+                Label l = (Label) event.getSource();
+                label.setStyle("-fx-background-color: lightgreen; -fx-padding: 3");
+                int index = Integer.parseInt(l.getId());
+                System.out.println("index: " + index);
+                photographerList.setCurrentPhotographerIndex(index);
+                showCurrentPhotographerData(index);
+                editButton.setDisable(false);
+                deleteButton.setDisable(false);
+            });
+
+            listAnchorPane.getChildren().add(label);
             layoutY += 20;
+            i++;
         }
+    }
+
+    private void updatePhotographerList() {
+
+    }
+
+    private void showCurrentPhotographerData(int id) {
+        List<PhotographerPresentationModel> list = photographerList.getList();
+        PhotographerPresentationModel photographerPM = list.get(id);
+        vorname_text.setText(photographerPM.getFirstName());
+        nachname_text.setText(photographerPM.getLastName());
+        geburtstag_text.setText(photographerPM.getBirthDay().toString());
+        notizen.setText(photographerPM.getNotes());
     }
 }
 

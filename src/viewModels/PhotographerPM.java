@@ -89,4 +89,8 @@ public class PhotographerPM implements PhotographerPresentationModel {
         }
         return validationSummary;
     }
+
+    public PhotographerModel getPhotographerModel() {
+        return photographerModel;
+    }
 }

@@ -16,22 +16,22 @@
     <!-- Left Panel: control buttons-->
     <left>
         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-            <Button prefWidth="70.0" text="New" onAction="#addNewPhotographer">
+            <Button fx:id="newButton" prefWidth="70.0" text="New" onAction="#addNewPhotographer">
                 <VBox.margin>
                     <Insets top="10.0" />
                 </VBox.margin>
             </Button>
-            <Button prefWidth="70.0" text="Edit" onAction="#editPhotographer">
+            <Button fx:id="editButton" prefWidth="70.0" text="Edit" onAction="#editPhotographer">
                 <VBox.margin>
                     <Insets top="10.0" />
                 </VBox.margin>
             </Button>
-            <Button prefWidth="70.0" text="Save" onAction="#savePhotographerData">
+            <Button fx:id="saveButton" prefWidth="70.0" text="Save" onAction="#savePhotographerData">
                 <VBox.margin>
                     <Insets top="10.0" />
                 </VBox.margin>
             </Button>
-            <Button prefWidth="70.0" text="Delete" onAction="#deletePhotographer">
+            <Button fx:id="deleteButton" prefWidth="70.0" text="Delete" onAction="#deletePhotographer">
                 <VBox.margin>
                     <Insets top="10.0" />
                 </VBox.margin>
@@ -42,7 +42,6 @@
     <!-- Center Panel: photographer list-->
     <center>
         <ScrollPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-
             <AnchorPane fx:id="listAnchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0">
             </AnchorPane>
 
