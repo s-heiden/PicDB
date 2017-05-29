@@ -85,7 +85,7 @@
                     <Insets bottom="5.0" top="10.0" />
                 </padding>
             </Label>
-            <TextArea maxWidth="-Infinity" prefHeight="200.0" prefWidth="215.0" />
+            <TextArea fx:id="notizen" maxWidth="-Infinity" prefHeight="200.0" prefWidth="215.0" />
 
             <BorderPane.margin>
                 <Insets left="10.0" />
