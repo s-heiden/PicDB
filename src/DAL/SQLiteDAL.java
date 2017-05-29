@@ -20,6 +20,8 @@ import java.util.Collection;
 
 public class SQLiteDAL implements DataAccessLayer {
 
+    private static SQLiteDAL sqLiteDalInstance;
+
     private static final String SQLITE_JDBC = "org.sqlite.JDBC";
     private Connection connection;
 
@@ -58,13 +60,20 @@ public class SQLiteDAL implements DataAccessLayer {
                     Photographers.COLUMN_PHOTOGRAPHERS_BIRTHDAY + " LONG," +
                     Photographers.COLUMN_PHOTOGRAPHERS_NOTES + " VARCHAR(512));";
 
+    public static SQLiteDAL getInstance() {
+        if (sqLiteDalInstance == null) {
+            sqLiteDalInstance = new SQLiteDAL();
+        }
+        return sqLiteDalInstance;
+    }
+
     /**
      * Establishes the connection, sets up the database if there are no tables.
      */
-    public SQLiteDAL() {
+    private SQLiteDAL() {
         System.out.println("creating SQLiteDAL()");
         openDBConnection();
-        setupDatabase();;
+        setupDatabase();
     }
 
     /**

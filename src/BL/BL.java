@@ -17,10 +17,12 @@ import java.util.*;
 
 public final class BL implements BusinessLayer {
 
-    private final DataAccessLayer dal;
+    private SQLiteDAL dal;
 
     public BL() {
-        this.dal = new SQLiteDAL();
+        if (dal == null) {
+            dal = SQLiteDAL.getInstance();
+        }
         sync();
     }
 

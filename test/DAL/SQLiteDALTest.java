@@ -32,18 +32,18 @@ public class SQLiteDALTest {
     public static void tearDownClass() {
     }
 
-    public void test_has_picture(int id) throws SQLException {
-        SQLiteDAL dal = new SQLiteDAL();
+    public void test_has_picture(int id) throws SQLException {;
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         assertEquals(true, dal.containsRowForTable(id, DBTable.PICTURES));
     }
 
     public void test_has_camera(int id) throws SQLException {
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         assertEquals(true, dal.containsRowForTable(id, DBTable.CAMERAS));
     }
 
     public void test_has_photographer(int id) throws SQLException {
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         assertEquals(true, dal.containsRowForTable(id, DBTable.PHOTOGRAPHERS));
     }
 
@@ -52,8 +52,8 @@ public class SQLiteDALTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
 
-        SQLiteDAL obj = new SQLiteDAL();
-        assertNotNull("getAnyDataAccessLayer", obj);
+        SQLiteDAL dal = SQLiteDAL.getInstance();
+        assertNotNull("getAnyDataAccessLayer", dal);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class SQLiteDALTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
 
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         PictureModel picture = new Picture();
         int testID = 1234;
 
@@ -94,7 +94,7 @@ public class SQLiteDALTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
 
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         int testID = 1234;
         PictureModel picture = new Picture();
         picture.setID(testID);
@@ -114,7 +114,7 @@ public class SQLiteDALTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
 
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         PhotographerModel p = new Photographer();
         int testID = new Random().nextInt(Integer.MAX_VALUE);
 
@@ -136,7 +136,7 @@ public class SQLiteDALTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
 
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         int ID = 1;
         PhotographerModel p = dal.getPhotographer(ID);
         System.out.println(p);
@@ -148,7 +148,7 @@ public class SQLiteDALTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
 
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         int ID = 1;
         CameraModel p = dal.getCamera(ID);
         System.out.println(p);
@@ -160,7 +160,7 @@ public class SQLiteDALTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
 
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         Collection<CameraModel> d = dal.getCameras();
         d.forEach((c) -> {
             System.out.println(c);
@@ -173,7 +173,7 @@ public class SQLiteDALTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
 
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         Collection<PhotographerModel> d = dal.getPhotographers();
         d.forEach((c) -> {
             System.out.println(c);
@@ -186,7 +186,7 @@ public class SQLiteDALTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
 
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         Collection<PictureModel> d = dal.getPictures(null, null, null, null);
         d.forEach((c) -> {
             System.out.println(c);
@@ -199,7 +199,7 @@ public class SQLiteDALTest {
         System.out.println(new Object() {
         }.getClass().getEnclosingMethod().getName().toUpperCase());
 
-        SQLiteDAL dal = new SQLiteDAL();
+        SQLiteDAL dal = SQLiteDAL.getInstance();
         System.out.println("Next ID for Photographers: " + dal.nextIdFor(DBTable.PHOTOGRAPHERS));
     }
 }
