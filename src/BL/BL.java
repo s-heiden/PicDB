@@ -195,4 +195,7 @@ public final class BL implements BusinessLayer {
         return dal.getCamera(ID);
     }
 
+    public void vacuum() {
+        dal.vacuum();
+    }
 }

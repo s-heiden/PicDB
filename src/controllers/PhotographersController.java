@@ -29,7 +29,7 @@ import java.util.*;
 public class PhotographersController  implements Initializable {
 
     private Set<Node> dataEntryFields = new HashSet<>();
-    private static BusinessLayer bl;
+    private static BL bl;
     private static PhotographerListPM photographerList;
     private boolean isPhotographerNew = false;
 
@@ -58,7 +58,7 @@ public class PhotographersController  implements Initializable {
         // fetch all photographers from DB into the photographerList
         List<PhotographerModel> photographerModels = null;
         try {
-            photographerModels = (List) bl.getPhotographers();
+            photographerModels = (List<PhotographerModel>) bl.getPhotographers();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -134,7 +134,12 @@ public class PhotographersController  implements Initializable {
     public void deletePhotographer(ActionEvent actionEvent) {
         try {
             photographerList.deleteCurrentPhotographer();
-            bl.deletePhotographer(photographerList.getCurrentPhotographerIndex());
+            bl.vacuum();
+            List<PhotographerPresentationModel> l =  photographerList.getList();
+            for (PhotographerPresentationModel p : l) {
+                bl.save(((PhotographerPM) p).getPhotographerModel());
+            }
+
             updatePhotographersList();
             editButton.setDisable(true);
             saveButton.setDisable(true);
