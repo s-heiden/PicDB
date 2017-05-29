@@ -1,6 +1,8 @@
 package helpers;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,7 +13,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
@@ -81,6 +83,27 @@ public class Helpers {
 
     public static Node getGridpaneNodeAt(GridPane gridpane, int row, int column) {
         return gridpane.getChildren().get(column * Constants.ROWS_PER_METAINFO_GRIDPANE + row);
+    }
+
+    public static String getDatabaseName() {
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("src/resources/properties");
+            prop.load(input);
+            return prop.getProperty("database_name");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return "";
     }
 }
 

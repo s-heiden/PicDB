@@ -3,11 +3,11 @@ package DAL;
 
 public final class DBSchema {
 
-    public static final String DATABASE_URL = "jdbc:sqlite:picdb2.db";
+    public static final String DATABASE_URL = helpers.Helpers.getDatabaseName();
 
     // private ctor to prevent instantiation
     private DBSchema() {}
-
+    
     public static final class Pictures {
         public static final String TABLE_NAME = "pictures";
         public static final String COLUMN_PICTURES_ID = "id";
