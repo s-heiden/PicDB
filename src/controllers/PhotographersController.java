@@ -5,6 +5,7 @@ import BIF.SWE2.interfaces.models.PhotographerModel;
 import BIF.SWE2.interfaces.presentationmodels.PhotographerPresentationModel;
 import BL.BL;
 import Models.Photographer;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -33,10 +34,10 @@ public class PhotographersController  implements Initializable {
     private boolean isPhotographerNew = false;
 
     @FXML private VBox person_data_vbox;
-    @FXML private TextField vorname_text;
-    @FXML private TextField nachname_text;
-    @FXML private TextField geburtstag_text;
-    @FXML private TextArea notizen;
+    @FXML private TextField firstNameTextField;
+    @FXML private TextField lastNameTextField;
+    @FXML private TextField birthdayTextField;
+    @FXML private TextArea notesTextField;
     @FXML private AnchorPane listAnchorPane;
     @FXML private Button editButton;
     @FXML private Button saveButton;
@@ -65,7 +66,7 @@ public class PhotographersController  implements Initializable {
             photographerList = PhotographerListPM.getInstance(photographerModels);
         }
 
-        showPhotographersList();
+        updatePhotographersList();
         makeTextfieldsEditable(false);
 
         editButton.setDisable(true);
@@ -79,6 +80,12 @@ public class PhotographersController  implements Initializable {
     // NEW
     public void addNewPhotographer() {
         isPhotographerNew = true;
+        unselectPhotographers();
+        listAnchorPane.setDisable(true);
+        editButton.setDisable(true);
+        deleteButton.setDisable(true);
+        saveButton.setDisable(false);
+        makeTextfieldsEditable(true);
     }
 
     // EDIT
@@ -97,16 +104,10 @@ public class PhotographersController  implements Initializable {
             photographerPM = (PhotographerPM) photographerList.getCurrentPhotographer();
         }
 
-        makeTextfieldsEditable(false);
-        String firstName = vorname_text.getText();
-        String lastName = nachname_text.getText();
-        String birthday = geburtstag_text.getText();
-        String notes = notizen.getText();
-
-        photographerPM.setFirstName(firstName);
-        photographerPM.setLastName(lastName);
-        photographerPM.setBirthDay(parseDate(birthday));
-        photographerPM.setNotes(notes);
+        photographerPM.setFirstName(firstNameTextField.getText());
+        photographerPM.setLastName(lastNameTextField.getText());
+        photographerPM.setBirthDay(parseDate(birthdayTextField.getText()));
+        photographerPM.setNotes(notesTextField.getText());
 
         if(photographerPM.isValid()) {
             try {
@@ -121,16 +122,26 @@ public class PhotographersController  implements Initializable {
         if(isPhotographerNew) { // save into list
             photographerList.addNewPhotographer(photographerPM);
             isPhotographerNew = false;
+            listAnchorPane.setDisable(false);
         }
-        listAnchorPane.getChildren().clear();
-        showPhotographersList();
 
+        updatePhotographersList();
+        makeTextfieldsEditable(false);
         saveButton.setDisable(true);
     }
 
     // DELETE
     public void deletePhotographer(ActionEvent actionEvent) {
-        // TODO: implement
+        try {
+            photographerList.deleteCurrentPhotographer();
+            bl.deletePhotographer(photographerList.getCurrentPhotographerIndex());
+            updatePhotographersList();
+            editButton.setDisable(true);
+            saveButton.setDisable(true);
+            newButton.setDisable(false);
+        } catch(Exception e) {
+            System.out.println("Cannot delete photographer");
+        }
     }
 
     // ---------------- helper methods ----------------------------------
@@ -160,7 +171,8 @@ public class PhotographersController  implements Initializable {
         return LocalDate.parse(dateString, formatter); // 2014-12-01
     }
 
-    private void showPhotographersList() {
+    private void updatePhotographersList() {
+        listAnchorPane.getChildren().clear();
         double layoutY = 10;
         List<PhotographerPresentationModel> list = photographerList.getList();
         int i = 0;
@@ -169,12 +181,11 @@ public class PhotographersController  implements Initializable {
             Label label = new Label(labelText);
             label.setLayoutY(layoutY);
             label.setId(Integer.toString(i));
-            label.setStyle("-fx-padding: 3;");
             label.setOnMouseClicked((MouseEvent event) -> {
+                unselectPhotographers();
                 Label l = (Label) event.getSource();
-                label.setStyle("-fx-background-color: lightgreen; -fx-padding: 3");
+                label.setStyle("-fx-background-color: lightgreen");
                 int index = Integer.parseInt(l.getId());
-                System.out.println("index: " + index);
                 photographerList.setCurrentPhotographerIndex(index);
                 showCurrentPhotographerData(index);
                 editButton.setDisable(false);
@@ -187,17 +198,20 @@ public class PhotographersController  implements Initializable {
         }
     }
 
-    private void updatePhotographerList() {
-
-    }
-
     private void showCurrentPhotographerData(int id) {
         List<PhotographerPresentationModel> list = photographerList.getList();
         PhotographerPresentationModel photographerPM = list.get(id);
-        vorname_text.setText(photographerPM.getFirstName());
-        nachname_text.setText(photographerPM.getLastName());
-        geburtstag_text.setText(photographerPM.getBirthDay().toString());
-        notizen.setText(photographerPM.getNotes());
+        firstNameTextField.setText(photographerPM.getFirstName());
+        lastNameTextField.setText(photographerPM.getLastName());
+        birthdayTextField.setText(photographerPM.getBirthDay().toString());
+        notesTextField.setText(photographerPM.getNotes());
+    }
+
+    private void unselectPhotographers() {
+        ObservableList<Node> labelList = listAnchorPane.getChildren();
+        for(Node node : labelList) {
+            node.setStyle("-fx-background-color: none");
+        }
     }
 }
 

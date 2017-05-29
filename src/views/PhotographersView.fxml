@@ -68,9 +68,9 @@
                 <Label text="Vorname:" />
                 <Label text="Nachname:" GridPane.rowIndex="1" />
                 <Label text="Geburtstag:" GridPane.rowIndex="2" />
-                <TextField fx:id="vorname_text" GridPane.columnIndex="1" />
-                <TextField fx:id="nachname_text" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <TextField fx:id="geburtstag_text" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField fx:id="firstNameTextField" GridPane.columnIndex="1" />
+                <TextField fx:id="lastNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <TextField fx:id="birthdayTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 <padding>
                     <Insets right="10.0" />
                 </padding>
@@ -80,7 +80,7 @@
                     <Insets bottom="5.0" top="10.0" />
                 </padding>
             </Label>
-            <TextArea fx:id="notizen" maxWidth="-Infinity" prefHeight="200.0" prefWidth="215.0" />
+            <TextArea fx:id="notesTextField" maxWidth="-Infinity" prefHeight="200.0" prefWidth="215.0" />
 
             <BorderPane.margin>
                 <Insets left="10.0" />

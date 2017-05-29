@@ -43,7 +43,15 @@ public class PhotographerListPM implements PhotographerListPresentationModel {
         currentPhotographerIndex = id;
     }
 
+    public int getCurrentPhotographerIndex() {
+        return currentPhotographerIndex;
+    }
+
     public void addNewPhotographer(PhotographerPresentationModel photographerPM) {
         photographerPMs.add(photographerPM);
+    }
+
+    public void deleteCurrentPhotographer() {
+        photographerPMs.remove(currentPhotographerIndex);
     }
 }
