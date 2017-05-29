@@ -17,9 +17,17 @@ import java.util.*;
 
 public final class BL implements BusinessLayer {
 
-    private SQLiteDAL dal;
+    private static BL blInstance;
+    private static SQLiteDAL dal;
 
-    public BL() {
+    public static BL getInstance() {
+        if (blInstance == null) {
+            blInstance = new BL();
+        }
+        return blInstance;
+    }
+
+    private BL() {
         if (dal == null) {
             dal = SQLiteDAL.getInstance();
         }

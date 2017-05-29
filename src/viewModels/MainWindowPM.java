@@ -14,10 +14,12 @@ public class MainWindowPM implements MainWindowPresentationModel {
     
     private PictureListPresentationModel pictureListPM;
     private SearchPresentationModel searchPM;
-    private BusinessLayer bl;
+    private static BusinessLayer bl;
 
     public MainWindowPM() {
-        this.bl = new BL();
+        if (bl == null) {
+            bl = BL.getInstance();
+        }
 
         // PictureListPresentationModel
         try {
