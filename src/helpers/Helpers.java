@@ -79,7 +79,7 @@ public class Helpers {
         return clazz.getEnumConstants()[x];
     }
 
-    public static Node getGridpaneNodeViaRowAndColumn(GridPane gridpane, int row, int column) {
+    public static Node getGridpaneNodeAt(GridPane gridpane, int row, int column) {
         return gridpane.getChildren().get(column * Constants.ROWS_PER_METAINFO_GRIDPANE + row);
     }
 }
