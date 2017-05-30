@@ -1,6 +1,5 @@
 package controllers;
 
-import BIF.SWE2.interfaces.BusinessLayer;
 import BIF.SWE2.interfaces.models.PhotographerModel;
 import BIF.SWE2.interfaces.presentationmodels.PhotographerPresentationModel;
 import BL.BL;
@@ -16,8 +15,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import viewModels.PhotographerListPM;
 import viewModels.PhotographerPM;
 
@@ -25,16 +22,15 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class PhotographersController  implements Initializable {
 
-    private Set<Node> dataEntryFields = new HashSet<>();
     private static BL bl;
     private static PhotographerListPM photographerList;
     private boolean isPhotographerNew = false;
 
-    @FXML private VBox person_data_vbox;
     @FXML private TextField firstNameTextField;
     @FXML private TextField lastNameTextField;
     @FXML private TextField birthdayTextField;
@@ -50,8 +46,6 @@ public class PhotographersController  implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        saveDataEntryFieldsIntoSet();
-
         if (bl == null) {
             bl = BL.getInstance();
         }
@@ -101,22 +95,18 @@ public class PhotographersController  implements Initializable {
 
         if(lastName.isEmpty()) {
             lastNameTextField.setStyle("-fx-text-box-border: red;");
-            System.out.println("You have to enter last name!");
             return;
         } else {
             lastNameTextField.setStyle(null);
             photographerPM.setLastName(lastName);
         }
-        if(firstName.isEmpty()) {
-            firstName = "";
-        }
+
         photographerPM.setFirstName(firstName);
 
         try {
             photographerPM.setBirthDay(parseDate(birthday));
         } catch (DateTimeParseException e) {
             birthdayTextField.setStyle("-fx-text-box-border: red;");
-            System.out.println("Wrong date format!");
             return;
         }
 
@@ -132,7 +122,7 @@ public class PhotographersController  implements Initializable {
             System.out.println("Photographer not valid");
         }
 
-        if(isPhotographerNew) { // save into list
+        if(isPhotographerNew) {
             photographerList.addNewPhotographer(photographerPM);
             isPhotographerNew = false;
             listAnchorPane.setDisable(false);
@@ -147,7 +137,7 @@ public class PhotographersController  implements Initializable {
             photographerList.deleteCurrentPhotographer();
             bl.deletePhotographer(photographerList.getCurrentPhotographerIndex());
             updatePhotographersList();
-            clearInputFields();;
+            clearInputFields();
         } catch(Exception e) {
             System.out.println("Cannot delete photographer");
             e.printStackTrace();
@@ -156,24 +146,11 @@ public class PhotographersController  implements Initializable {
 
     // ---------------- helper methods ----------------------------------
 
-    private void saveDataEntryFieldsIntoSet() {
-        for(Node childNode : person_data_vbox.getChildren()) {
-            if(childNode instanceof TextArea) { // TextArea Notizen
-                dataEntryFields.add(childNode);
-            } else if (childNode instanceof GridPane) {
-                for(Node grandChildNode : ((GridPane)childNode).getChildren()) {
-                    if(grandChildNode instanceof TextField) { // TextFields vorname, nachname, gt
-                        dataEntryFields.add(grandChildNode);
-                    }
-                }
-            }
-        }
-    }
-
     private void makeTextfieldsEditable(Boolean makeEditable) {
-        for (Node textField : dataEntryFields) {
-            textField.setDisable(!makeEditable);
-        }
+        firstNameTextField.setDisable(!makeEditable);
+        lastNameTextField.setDisable(!makeEditable);
+        birthdayTextField.setDisable(!makeEditable);
+        notesTextField.setDisable(!makeEditable);
     }
 
     private LocalDate parseDate(String dateString) throws DateTimeParseException {
@@ -233,4 +210,3 @@ public class PhotographersController  implements Initializable {
         notesTextField.clear();
     }
 }
-
