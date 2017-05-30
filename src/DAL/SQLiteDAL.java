@@ -40,7 +40,7 @@ public class SQLiteDAL implements DataAccessLayer {
                     Pictures.COLUMN_PICTURES_EXIF_EXPOSURETIME + " DOUBLE," +
                     Pictures.COLUMN_PICTURES_EXIF_ISOVALUE + " DOUBLE," +
                     Pictures.COLUMN_PICTURES_EXIF_FLASH + " BOOLEAN," +
-                    Pictures.COLUMN_PICTURES_EXIF_EXPOSUREPROGRAM + " INT);";
+                    Pictures.COLUMN_PICTURES_EXIF_EXPOSUREPROGRAM + " VARCHAR(256));";
 
     private static final String CREATE_TABLE_CAMERAS =
             "CREATE TABLE IF NOT EXISTS " + Cameras.TABLE_NAME + " (" +
@@ -174,8 +174,6 @@ public class SQLiteDAL implements DataAccessLayer {
                             break;
                     }
                 }
-            } else {
-                // no row of this id was found
             }
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -223,6 +221,7 @@ public class SQLiteDAL implements DataAccessLayer {
         picture.getEXIF().setExposureTime(result.getDouble("exif_exposuretime"));
         picture.getEXIF().setISOValue(result.getDouble("exif_isovalue"));
         picture.getEXIF().setFlash(result.getBoolean("exif_flash"));
+        picture.getEXIF().setExposureProgram(ExposurePrograms.valueOf(result.getString("exif_exposureprogram")));
         picture.setCamera(getCamera(result.getInt("camera_id")));
         return picture;
     }
@@ -270,7 +269,7 @@ public class SQLiteDAL implements DataAccessLayer {
                 statement.setDouble(9, picture.getEXIF().getExposureTime());
                 statement.setDouble(10, picture.getEXIF().getISOValue());
                 statement.setBoolean(11, picture.getEXIF().getFlash());
-                statement.setInt(12, picture.getEXIF().getExposureProgram().getValue());
+                statement.setString(12, picture.getEXIF().getExposureProgram().name());
             }
             if (picture.getCamera() != null) {
                 statement.setInt(13, picture.getCamera().getID());

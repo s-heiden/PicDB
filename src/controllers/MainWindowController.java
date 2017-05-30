@@ -1,6 +1,7 @@
 package controllers;
 
 import BIF.SWE2.interfaces.BusinessLayer;
+import BIF.SWE2.interfaces.ExposurePrograms;
 import BIF.SWE2.interfaces.models.IPTCModel;
 import BIF.SWE2.interfaces.models.PictureModel;
 import BIF.SWE2.interfaces.presentationmodels.IPTCPresentationModel;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
+import javafx.scene.control.ImageNavigationScrollPane;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
@@ -59,9 +61,9 @@ public class MainWindowController implements Initializable {
     @FXML
     private BorderPane rootPane;
     @FXML
-    private ScrollPane imageNavigationPane;
-    @FXML
     private HBox searchHBox;
+    @FXML
+    private ScrollPane imageNavigationPane;
 
     @FXML
     protected void quitAction(ActionEvent event) {
@@ -70,7 +72,7 @@ public class MainWindowController implements Initializable {
 
     // TODO: (nice to have) refactor and simplify
     @FXML
-    protected void saveIptcAction(ActionEvent event) {        
+    protected void saveIptcAction(ActionEvent event) {
         PictureModel newPictureModel = null;
         IPTCPresentationModel iptcPM = mainWindowPM.getCurrentPicture().getIPTC();
         try {
@@ -86,7 +88,7 @@ public class MainWindowController implements Initializable {
             String keywordsString = ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 2, 1)).getText();
             String byLineString = ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 3, 1)).getText();
             String copyrightString = (String) ((ComboBox) Helpers.getGridpaneNodeAt(iptcGridpane, 4, 1)).getSelectionModel().getSelectedItem();
-            
+
             // the prototype we created earlier is updated
             if (iptc != null) {
                 iptc.setHeadline(headlineString);
@@ -95,7 +97,7 @@ public class MainWindowController implements Initializable {
                 iptc.setByLine(byLineString);
                 iptc.setCopyrightNotice(copyrightString);
             }
-            
+
             // updating the presentation model
             if (iptcPM != null) {
                 iptcPM.setHeadline(headlineString);
@@ -137,10 +139,10 @@ public class MainWindowController implements Initializable {
         Collection<PicturePresentationModel> picturePMs = new ArrayList<>();
         try {
             BL.getInstance().getPictures(searchString, null, null, null).forEach((p) -> {
-                    picturePMs.add(new PicturePM(p));
+                picturePMs.add(new PicturePM(p));
             });
             drawImageNavigationHBox(picturePMs);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -174,9 +176,10 @@ public class MainWindowController implements Initializable {
         mainWindowPM = new MainWindowPM();
 
         drawSelectedImagePane();
-        
+
         drawImageNavigationHBox(mainWindowPM.getList().getList());
         drawCopyrightComboBox();
+        drawExposureProgramComboBox();
         fillSelectedImageControls();
     }
 
@@ -222,6 +225,9 @@ public class MainWindowController implements Initializable {
 
         ((CheckBox) Helpers.getGridpaneNodeAt(exifGridpane, 4, 1))
                 .setSelected(mainWindowPM.getCurrentPicture().getEXIF().getFlash());
+
+        ((ComboBox) Helpers.getGridpaneNodeAt(exifGridpane, 5, 1))
+                .setValue(mainWindowPM.getCurrentPicture().getEXIF().getExposureProgram());
     }
 
     private void drawCopyrightComboBox() {
@@ -230,6 +236,14 @@ public class MainWindowController implements Initializable {
                         mainWindowPM.getCurrentPicture().getIPTC().getCopyrightNotices()));
         comboBox.setStyle("-fx-font: 11px \"System\";");
         iptcGridpane.add(comboBox, 1, 4);
+    }
+
+    private void drawExposureProgramComboBox() {
+        ComboBox comboBox = new ComboBox(
+                FXCollections.observableArrayList(ExposurePrograms.getNamesAsArray()));
+        comboBox.setStyle("-fx-font: 11px \"System\";");
+        comboBox.setDisable(true);
+        exifGridpane.add(comboBox, 1, 5);
     }
 
     private Stage getPrimaryStage() {
@@ -272,7 +286,7 @@ public class MainWindowController implements Initializable {
         dialog.setScene(dialogScene);
         dialog.show();
     }
-    
+
     private void drawImageNavigationHBox(Collection<PicturePresentationModel> picturePMs) {
         ((HBox) imageNavigationPane.getContent()).getChildren().clear();
         for (PicturePresentationModel p : picturePMs) {

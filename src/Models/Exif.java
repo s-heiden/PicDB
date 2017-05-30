@@ -10,17 +10,18 @@ public class Exif implements EXIFModel {
     private double exposureTime;
     private double isoValue;
     private boolean flash;
-    private ExposurePrograms exposureProgram = ExposurePrograms.NotDefined;
+    private ExposurePrograms exposureProgram;
 
     public Exif() {
     }
 
-    public Exif(String make, double fNumber, double exposureTime, double isoValue, boolean flash) {
+    public Exif(String make, double fNumber, double exposureTime, double isoValue, boolean flash, ExposurePrograms exposureProgram) {
         this.make = make;
         this.fNumber = fNumber;
         this.exposureTime = exposureTime;
         this.isoValue = isoValue;
         this.flash = flash;
+        this.exposureProgram = exposureProgram;
     }
 
     @Override

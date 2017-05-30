@@ -26,7 +26,8 @@ public class Constants {
     public static final String EP_APERTURE_PRIORITY = "ep_aperture_priority.png";
     public static final String EP_NOT_DEFINED_PATH = "ep_not_defined.png";
     public static final Collection<String> COPYRIGHT_NOTICES = Arrays.asList("All rights reserved", "CC-BY", "CC-BY-SA", "CC-BY-ND", "CC-BY-NC", "CC-BY-NC-SA", "CC-BY-NC-ND");
-    public static final int ROWS_PER_METAINFO_GRIDPANE = 5;
+    public static final int COLS_IN_METAINFO_GRIDPANE = 2;
     public static final String LOGO_PATH = "file:src/resources/logo.jpg";
+    public static final String CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     
 }

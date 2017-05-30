@@ -48,13 +48,12 @@ public class Helpers {
         }
     }
 
-    public static String getRandomString(int length) {
-        final String CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    public static String getRandomString(int length) {        
         StringBuilder builder = new StringBuilder();
         Random rnd = new Random();
         while (builder.length() < length) {
-            int index = (int) (rnd.nextFloat() * CHARS.length());
-            builder.append(CHARS.charAt(index));
+            int index = (int) (rnd.nextFloat() * Constants.CHARS.length());
+            builder.append(Constants.CHARS.charAt(index));
         }
         return builder.toString();
     }
@@ -76,13 +75,14 @@ public class Helpers {
         }
     }
     
-     public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
+    public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
         int x = new Random().nextInt(clazz.getEnumConstants().length);
         return clazz.getEnumConstants()[x];
     }
 
     public static Node getGridpaneNodeAt(GridPane gridpane, int row, int column) {
-        return gridpane.getChildren().get(column * Constants.ROWS_PER_METAINFO_GRIDPANE + row);
+        int rows = gridpane.getChildren().size() / helpers.Constants.COLS_IN_METAINFO_GRIDPANE;
+        return gridpane.getChildren().get(column * rows + row);
     }
 
     public static String getDatabaseName() {

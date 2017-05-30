@@ -43,7 +43,7 @@ public class ExifPM implements EXIFPresentationModel {
 
     @Override
     public String getExposureProgram() {
-        return exifModel.getExposureProgram().name();
+        return exifModel.getExposureProgram().toString();
     }
 
     private ExposurePrograms getExposureProgramObject() {
