@@ -483,18 +483,4 @@ public class SQLiteDAL implements DataAccessLayer {
         }
         return id;
     }
-
-    // delete everything, rebuild indexes
-    public void vacuum() {
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement("DELETE FROM " + Photographers.TABLE_NAME + ";"
-                    + "DELETE FROM sqlite_sequence WHERE name = '" + Photographers.TABLE_NAME + "';");
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            closeStatementSilently(statement);
-        }
-    }
 }
