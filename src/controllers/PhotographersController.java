@@ -82,6 +82,11 @@ public class PhotographersController  implements Initializable {
 
     // SAVE
     public void savePhotographerData(ActionEvent actionEvent) {
+        // reset GUI
+        lastNameTextField.setStyle(null);
+        birthdayTextField.setStyle(null);
+
+        //  do we create new photographer or editing existing one?
         PhotographerPM photographerPM;
         if(isPhotographerNew) {
             photographerPM = new PhotographerPM(new Photographer());
@@ -89,45 +94,23 @@ public class PhotographersController  implements Initializable {
             photographerPM = (PhotographerPM) photographerList.getCurrentPhotographer();
         }
 
-        String firstName = firstNameTextField.getText().trim();
-        String lastName = lastNameTextField.getText().trim();
-        String birthday = birthdayTextField.getText().trim();
-
-        if(lastName.isEmpty()) {
-            lastNameTextField.setStyle("-fx-text-box-border: red;");
-            return;
-        } else {
-            lastNameTextField.setStyle(null);
-            photographerPM.setLastName(lastName);
-        }
-
-        photographerPM.setFirstName(firstName);
-
-        try {
-            photographerPM.setBirthDay(parseDate(birthday));
-        } catch (DateTimeParseException e) {
-            birthdayTextField.setStyle("-fx-text-box-border: red;");
+        if(!saveUnserInputIntoPhotographer(photographerPM)) {
             return;
         }
-
-        photographerPM.setNotes(notesTextField.getText());
 
         if(photographerPM.isValid()) {
-            try {
-                bl.save(photographerPM.getPhotographerModel());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            saveIntoDB(photographerPM);
         } else {
-            System.out.println("Photographer not valid");
+            showInputError(photographerPM);
+            return;
         }
 
+        // update photographer list and GUI
         if(isPhotographerNew) {
             photographerList.addNewPhotographer(photographerPM);
             isPhotographerNew = false;
             listAnchorPane.setDisable(false);
         }
-        birthdayTextField.setStyle(null);
         updatePhotographersList();
     }
 
@@ -144,8 +127,46 @@ public class PhotographersController  implements Initializable {
         }
     }
 
-    // ---------------- helper methods ----------------------------------
+    // ---------------- SAVE helper methods ----------------------------------
 
+    private void saveIntoDB(PhotographerPM photographerPM) {
+        try {
+            bl.save(photographerPM.getPhotographerModel());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showInputError(PhotographerPM photographerPM) {
+        if(!photographerPM.isValidLastName()) {
+            lastNameTextField.setStyle("-fx-text-box-border: red;");
+        }
+        if(!photographerPM.isValidBirthDay()) {
+            birthdayTextField.setStyle("-fx-text-box-border: red;");
+        }
+    }
+
+    /** Returns false if the input birthday date has wrong format */
+    private boolean saveUnserInputIntoPhotographer(PhotographerPM photographerPM) {
+        String firstName = firstNameTextField.getText().trim();
+        String lastName = lastNameTextField.getText().trim();
+        String birthday = birthdayTextField.getText().trim();
+        String notes = notesTextField.getText().trim();
+
+        photographerPM.setFirstName(firstName);
+        photographerPM.setLastName(lastName);
+        photographerPM.setNotes(notes);
+
+        try {
+            photographerPM.setBirthDay(parseDate(birthday)); // validate date format
+        } catch (DateTimeParseException e) {
+            birthdayTextField.setStyle("-fx-text-box-border: red;");
+            return false;
+        }
+        return true;
+    }
+
+    // ----------------other helper methods ----------------------------------
     private void makeTextfieldsEditable(Boolean makeEditable) {
         firstNameTextField.setDisable(!makeEditable);
         lastNameTextField.setDisable(!makeEditable);
