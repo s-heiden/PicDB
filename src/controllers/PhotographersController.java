@@ -195,7 +195,6 @@ public class PhotographersController  implements Initializable {
                 Label l = (Label) event.getSource();
                 label.setStyle("-fx-background-color: lightgreen");
                 int index = Integer.parseInt(l.getId());
-                System.out.println("index: " + index);
                 photographerList.setCurrentPhotographerIndex(index);
                 showCurrentPhotographerData(index);
                 makeTextfieldsEditable(true);

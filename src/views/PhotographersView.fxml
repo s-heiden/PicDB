@@ -63,8 +63,8 @@
                 <Label text="Nachname:" GridPane.rowIndex="1" />
                 <Label text="Geburtstag:" GridPane.rowIndex="2" />
                 <TextField fx:id="firstNameTextField" GridPane.columnIndex="1" />
-                <TextField fx:id="lastNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <TextField fx:id="birthdayTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField fx:id="lastNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" promptText="Pflichtfeld"/>
+                <TextField fx:id="birthdayTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" promptText="yyyy-MM-dd"/>
                 <padding>
                     <Insets right="10.0" />
                 </padding>
