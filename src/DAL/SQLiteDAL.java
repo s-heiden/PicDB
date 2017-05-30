@@ -321,20 +321,56 @@ public class SQLiteDAL implements DataAccessLayer {
     /**
      * Returns a filtered list of Pictures from the directory, based on a database SQLiteDAL.
      *
-     * @param namePart may contain a name which is searched in the database
+     * @param searchString
      * @param photographerParts may contain photographer information which is searched in the database
      * @param iptcParts may contain Iptc information which is searched in the database
      * @param exifParts may contain Exif information which is searched in the database
      * @return a Collection of PictureModel objects which match the filter criteria
      */
     @Override
-    public Collection<PictureModel> getPictures(String namePart, PhotographerModel photographerParts, IPTCModel iptcParts, EXIFModel exifParts) {
-        // TODO: implement search
+    public Collection<PictureModel> getPictures(String searchString, PhotographerModel photographerParts, IPTCModel iptcParts, EXIFModel exifParts) {
+        if (photographerParts != null || iptcParts != null || exifParts != null) {
+            throw new UnsupportedOperationException("Detail search not implemented yet, "
+                    + "please use argument searchString for the search term");
+        }              
         Collection<PictureModel> pictureModels = new ArrayList<>();
-        getObjectsFrom(DBTable.PICTURES).forEach((o) -> {
-            pictureModels.add((PictureModel) o);
-        });
+        pictureModels.addAll(getPicturesHaving(searchString));
         return pictureModels;
+    }
+    
+    private ArrayList<PictureModel> getPicturesHaving(String searchString){
+        searchString = searchString
+                .replace("!", "!!")
+                .replace("%", "!%")
+                .replace("_", "!_")
+                .replace("[", "![");
+        
+        ArrayList<PictureModel> pictures = new ArrayList<>();
+        final String string = "SELECT * FROM " + DBSchema.Pictures.TABLE_NAME + " WHERE "
+                + Pictures.COLUMN_PICTURES_IPTC_CAPTION + " LIKE ? OR "
+                + Pictures.COLUMN_PICTURES_IPTC_HEADLINE + " LIKE ? OR "
+                + Pictures.COLUMN_PICTURES_IPTC_KEYWORDS + " LIKE ? OR "
+                + Pictures.COLUMN_PICTURES_IPTC_BYLINE + " LIKE ? OR "
+                + Pictures.COLUMN_PICTURES_COPYRIGHTNOTICE + " LIKE ?";
+                
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        try {
+            statement = connection.prepareStatement(string);
+            for (int i = 1; i <= 5; i++){
+                statement.setString(i, "%" + searchString + "%");            
+            }
+            result = statement.executeQuery();
+            while (result.next()) {
+                pictures.add(toPictureObject(result));
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            closeResultSilently(result);
+            closeStatementSilently(statement);
+        }
+        return pictures;
     }
 
     /**

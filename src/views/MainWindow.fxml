@@ -43,7 +43,7 @@
                 <!-- 1.2 Search bar-->
                 <HBox fx:id="searchHBox" alignment="CENTER_RIGHT" spacing="8.0">
                     <children>
-                        <TextField alignment="CENTER_RIGHT" maxWidth="350.0" minWidth="350.0" promptText="…" HBox.hgrow="NEVER">
+                        <TextField maxWidth="350.0" minWidth="350.0" promptText="…" HBox.hgrow="NEVER">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></TextField>

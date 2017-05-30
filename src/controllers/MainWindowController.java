@@ -32,6 +32,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.scene.control.CheckBox;
@@ -66,10 +68,9 @@ public class MainWindowController implements Initializable {
         getPrimaryStage().close();
     }
 
+    // TODO: (nice to have) refactor and simplify
     @FXML
-    protected void saveIptcAction(ActionEvent event) {
-        // TODO: (nice to have) refactor and simplify
-        
+    protected void saveIptcAction(ActionEvent event) {        
         PictureModel newPictureModel = null;
         IPTCPresentationModel iptcPM = mainWindowPM.getCurrentPicture().getIPTC();
         try {
@@ -126,12 +127,22 @@ public class MainWindowController implements Initializable {
     public void resetButtonAction(ActionEvent actionEvent) {
         TextField searchTF = (TextField) searchHBox.getChildren().get(0);
         searchTF.setText("");
-        resetImageNavigationPane();
+        resetImageNavigationHBox();
     }
 
     @FXML
     public void searchButtonAction(ActionEvent actionEvent) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String searchString = ((TextField) searchHBox.getChildren().get(0)).getText();
+        mainWindowPM.getSearch().setSearchText(searchString);
+        Collection<PicturePresentationModel> picturePMs = new ArrayList<>();
+        try {
+            BL.getInstance().getPictures(searchString, null, null, null).forEach((p) -> {
+                    picturePMs.add(new PicturePM(p));
+            });
+            drawImageNavigationHBox(picturePMs);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -163,12 +174,14 @@ public class MainWindowController implements Initializable {
         mainWindowPM = new MainWindowPM();
 
         drawSelectedImagePane();
-        drawImageNavigationHBox();
+        
+        drawImageNavigationHBox(mainWindowPM.getList().getList());
         drawCopyrightComboBox();
         fillSelectedImageControls();
     }
 
     private void drawSelectedImagePane() {
+        selectedImagePane.getChildren().clear();
         Image selectedImage = new Image(mainWindowPM.getCurrentPicture().getFilePath());
         ImageView selectedImageView = new ImageView();
         selectedImageView.setPreserveRatio(true);
@@ -259,9 +272,10 @@ public class MainWindowController implements Initializable {
         dialog.setScene(dialogScene);
         dialog.show();
     }
-
-    private void drawImageNavigationHBox() {
-        for (PicturePresentationModel p : mainWindowPM.getList().getList()) {
+    
+    private void drawImageNavigationHBox(Collection<PicturePresentationModel> picturePMs) {
+        ((HBox) imageNavigationPane.getContent()).getChildren().clear();
+        for (PicturePresentationModel p : picturePMs) {
             Image image = new Image(p.getFilePath(), 100, 100, false, false);
             ImageView imageView = new ImageView();
             imageView.setSmooth(true);
@@ -277,7 +291,7 @@ public class MainWindowController implements Initializable {
         }
     }
 
-    private void resetImageNavigationPane() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void resetImageNavigationHBox() {
+        drawImageNavigationHBox(mainWindowPM.getList().getList());
     }
 }
