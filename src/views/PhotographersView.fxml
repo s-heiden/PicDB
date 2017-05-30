@@ -4,8 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:controller="controllers.PhotographersController" 
-            fx:id="rootPanePhotographer" 
+<BorderPane fx:controller="controllers.PhotographersController"
             minHeight="-Infinity" 
             minWidth="-Infinity"
             prefHeight="400" 
@@ -17,11 +16,6 @@
     <left>
         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <Button fx:id="newButton" prefWidth="70.0" text="New" onAction="#addNewPhotographer">
-                <VBox.margin>
-                    <Insets top="10.0" />
-                </VBox.margin>
-            </Button>
-            <Button fx:id="editButton" prefWidth="70.0" text="Edit" onAction="#editPhotographer">
                 <VBox.margin>
                     <Insets top="10.0" />
                 </VBox.margin>

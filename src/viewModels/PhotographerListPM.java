@@ -35,8 +35,12 @@ public class PhotographerListPM implements PhotographerListPresentationModel {
 
     @Override
     public PhotographerPresentationModel getCurrentPhotographer() {
-        System.out.println("currentPhotographerIndex: " + currentPhotographerIndex);
-        return photographerPMs.get(currentPhotographerIndex);
+        for(PhotographerPresentationModel p : photographerPMs) {
+            if(p.getID() == currentPhotographerIndex) {
+                return p;
+            }
+        }
+        return null;
     }
 
     public void setCurrentPhotographerIndex(int id) {
@@ -52,6 +56,11 @@ public class PhotographerListPM implements PhotographerListPresentationModel {
     }
 
     public void deleteCurrentPhotographer() {
-        photographerPMs.remove(currentPhotographerIndex);
+        for(PhotographerPresentationModel p : photographerPMs) {
+            if(p.getID() == currentPhotographerIndex) {
+                photographerPMs.remove(p);
+                return;
+            }
+        }
     }
 }
