@@ -18,7 +18,6 @@ public class PictureListPM implements PictureListPresentationModel {
         pictures.forEach((p) -> {
             picturePMs.add(new PicturePM(p));
         });
-
     }
 
     @Override

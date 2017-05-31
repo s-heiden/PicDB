@@ -1,6 +1,8 @@
 package helpers;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,7 +13,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
@@ -46,13 +48,12 @@ public class Helpers {
         }
     }
 
-    public static String getRandomString(int length) {
-        final String CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    public static String getRandomString(int length) {        
         StringBuilder builder = new StringBuilder();
         Random rnd = new Random();
         while (builder.length() < length) {
-            int index = (int) (rnd.nextFloat() * CHARS.length());
-            builder.append(CHARS.charAt(index));
+            int index = (int) (rnd.nextFloat() * Constants.CHARS.length());
+            builder.append(Constants.CHARS.charAt(index));
         }
         return builder.toString();
     }
@@ -74,13 +75,35 @@ public class Helpers {
         }
     }
     
-     public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
+    public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
         int x = new Random().nextInt(clazz.getEnumConstants().length);
         return clazz.getEnumConstants()[x];
     }
 
-    public static Node getGridpaneNodeViaRowAndColumn(GridPane gridpane, int row, int column) {
-        return gridpane.getChildren().get(column * Constants.ROWS_PER_METAINFO_GRIDPANE + row);
+    public static Node getGridpaneNodeAt(GridPane gridpane, int row, int column) {
+        int rows = gridpane.getChildren().size() / helpers.Constants.COLS_IN_METAINFO_GRIDPANE;
+        return gridpane.getChildren().get(column * rows + row);
+    }
+
+    public static String getDatabaseName() {
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("src/resources/properties");
+            prop.load(input);
+            return prop.getProperty("database_name");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return "";
     }
 }
 

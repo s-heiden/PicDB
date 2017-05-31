@@ -1,5 +1,6 @@
 package DAL;
 
+import BIF.SWE2.interfaces.ExposurePrograms;
 import DAL.SQLiteDAL;
 import DAL.DBTable;
 import BIF.SWE2.interfaces.models.CameraModel;
@@ -74,7 +75,8 @@ public class SQLiteDALTest {
                 34.1,
                 12.1,
                 400,
-                true
+                true,
+                ExposurePrograms.CreativeProgram
         ));
         picture.setIPTC(new Iptc(
                 "Example Caption",

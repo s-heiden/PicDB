@@ -1,7 +1,14 @@
 package controllers;
 
+import BIF.SWE2.interfaces.BusinessLayer;
+import BIF.SWE2.interfaces.ExposurePrograms;
+import BIF.SWE2.interfaces.models.IPTCModel;
+import BIF.SWE2.interfaces.models.PictureModel;
+import BIF.SWE2.interfaces.presentationmodels.IPTCPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.MainWindowPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.PicturePresentationModel;
+import BL.BL;
+import Models.Iptc;
 import helpers.Constants;
 import helpers.Helpers;
 import javafx.event.ActionEvent;
@@ -26,16 +33,17 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import viewModels.MainWindowPM;
-import viewModels.PictureListPM;
+import viewModels.PicturePM;
 
 public class MainWindowController implements Initializable {
 
@@ -51,18 +59,58 @@ public class MainWindowController implements Initializable {
     @FXML
     private BorderPane rootPane;
     @FXML
-    private ScrollPane imageNavigationPane;
-    @FXML
     private HBox searchHBox;
+    @FXML
+    private ScrollPane pictureNavigationScrollPane;
 
     @FXML
     protected void quitAction(ActionEvent event) {
         getPrimaryStage().close();
     }
 
+    // TODO: (nice to have) refactor and simplify
     @FXML
     protected void saveIptcAction(ActionEvent event) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        PictureModel newPictureModel = null;
+        IPTCPresentationModel iptcPM = mainWindowPM.getCurrentPicture().getIPTC();
+        try {
+            // a new instance is generated from the database serving as a prototype for the saving action
+            newPictureModel = BL.getInstance().getPicture(mainWindowPM.getCurrentPicture().getID());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (newPictureModel != null) {
+            IPTCModel iptc = newPictureModel.getIPTC();
+            String headlineString = ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 0, 1)).getText();
+            String captionString = ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 1, 1)).getText();
+            String keywordsString = ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 2, 1)).getText();
+            String byLineString = ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 3, 1)).getText();
+            String copyrightString = (String) ((ComboBox) Helpers.getGridpaneNodeAt(iptcGridpane, 4, 1)).getSelectionModel().getSelectedItem();
+
+            // the prototype we created earlier is updated
+            if (iptc != null) {
+                iptc.setHeadline(headlineString);
+                iptc.setCaption(captionString);
+                iptc.setKeywords(keywordsString);
+                iptc.setByLine(byLineString);
+                iptc.setCopyrightNotice(copyrightString);
+            }
+
+            // updating the presentation model
+            if (iptcPM != null) {
+                iptcPM.setHeadline(headlineString);
+                iptcPM.setCaption(captionString);
+                iptcPM.setKeywords(keywordsString);
+                iptcPM.setByLine(byLineString);
+                iptcPM.setCopyrightNotice(copyrightString);
+            }
+        }
+        try {
+            // save the updated prototype to the database
+            BL.getInstance().save(newPictureModel);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -79,12 +127,22 @@ public class MainWindowController implements Initializable {
     public void resetButtonAction(ActionEvent actionEvent) {
         TextField searchTF = (TextField) searchHBox.getChildren().get(0);
         searchTF.setText("");
-        resetImageNavigationPane();
+        resetImageNavigationHBox();
     }
 
     @FXML
     public void searchButtonAction(ActionEvent actionEvent) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String searchString = ((TextField) searchHBox.getChildren().get(0)).getText();
+        mainWindowPM.getSearch().setSearchText(searchString);
+        Collection<PicturePresentationModel> picturePMs = new ArrayList<>();
+        try {
+            BL.getInstance().getPictures(searchString, null, null, null).forEach((p) -> {
+                picturePMs.add(new PicturePM(p));
+            });
+            drawPictureNavigationHBox(picturePMs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -115,21 +173,75 @@ public class MainWindowController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         mainWindowPM = new MainWindowPM();
 
-        drawSelectedImagePane();
-        drawImageNavigationHBox();
+        drawSelectedPicturePane();
+
+        drawPictureNavigationHBox(mainWindowPM.getList().getList());
         drawCopyrightComboBox();
-        populateUIFields();
+        drawExposureProgramComboBox();
+        fillSelectedPictureControls();
     }
 
-    private void drawSelectedImagePane() {
-        Image selectedImage = new Image(mainWindowPM.getCurrentPicture().getFilePath());
+    private void drawSelectedPicturePane() {
+        selectedImagePane.getChildren().clear();
+        Image selectedPicture = new Image(mainWindowPM.getCurrentPicture().getFilePath());
         ImageView selectedImageView = new ImageView();
         selectedImageView.setPreserveRatio(true);
         selectedImageView.setSmooth(true);
         selectedImageView.setCache(true);
-        selectedImageView.setImage(selectedImage);
+        selectedImageView.setImage(selectedPicture);
         selectedImageView.fitWidthProperty().bind(selectedImagePane.widthProperty());
         selectedImagePane.getChildren().add(selectedImageView);
+    }
+
+    private void fillSelectedPictureControls() {
+        ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 0, 1))
+                .setText(mainWindowPM.getCurrentPicture().getIPTC().getHeadline());
+
+        ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 1, 1))
+                .setText(mainWindowPM.getCurrentPicture().getIPTC().getCaption());
+
+        ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 2, 1))
+                .setText(mainWindowPM.getCurrentPicture().getIPTC().getKeywords());
+
+        ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 3, 1))
+                .setText(mainWindowPM.getCurrentPicture().getIPTC().getByLine());
+
+        ((ComboBox) Helpers.getGridpaneNodeAt(iptcGridpane, 4, 1))
+                .setValue(mainWindowPM.getCurrentPicture().getIPTC().getCopyrightNotice());
+
+        ((TextField) Helpers.getGridpaneNodeAt(exifGridpane, 0, 1))
+                .setText(mainWindowPM.getCurrentPicture().getEXIF().getMake());
+
+        ((TextField) Helpers.getGridpaneNodeAt(exifGridpane, 1, 1))
+                .setText(String.valueOf(mainWindowPM.getCurrentPicture().getEXIF().getFNumber()));
+
+        ((TextField) Helpers.getGridpaneNodeAt(exifGridpane, 2, 1))
+                .setText(String.valueOf(mainWindowPM.getCurrentPicture().getEXIF().getExposureTime()));
+
+        ((TextField) Helpers.getGridpaneNodeAt(exifGridpane, 3, 1))
+                .setText(String.valueOf(mainWindowPM.getCurrentPicture().getEXIF().getISOValue()));
+
+        ((CheckBox) Helpers.getGridpaneNodeAt(exifGridpane, 4, 1))
+                .setSelected(mainWindowPM.getCurrentPicture().getEXIF().getFlash());
+
+        ((ComboBox) Helpers.getGridpaneNodeAt(exifGridpane, 5, 1))
+                .setValue(mainWindowPM.getCurrentPicture().getEXIF().getExposureProgram());
+    }
+
+    private void drawCopyrightComboBox() {
+        ComboBox comboBox = new ComboBox(
+                FXCollections.observableArrayList(
+                        mainWindowPM.getCurrentPicture().getIPTC().getCopyrightNotices()));
+        comboBox.setStyle("-fx-font: 11px \"System\";");
+        iptcGridpane.add(comboBox, 1, 4);
+    }
+
+    private void drawExposureProgramComboBox() {
+        ComboBox comboBox = new ComboBox(
+                FXCollections.observableArrayList(ExposurePrograms.getNamesAsArray()));
+        comboBox.setStyle("-fx-font: 11px \"System\";");
+        comboBox.setDisable(true);
+        exifGridpane.add(comboBox, 1, 5);
     }
 
     private Stage getPrimaryStage() {
@@ -150,7 +262,6 @@ public class MainWindowController implements Initializable {
         VBox dialogVBox = new VBox(20);
 
         if (title.equals("About")) {
-
             Image image = new Image(Constants.LOGO_PATH);
             ImageView imageView = new ImageView();
             imageView.setImage(image);
@@ -174,64 +285,25 @@ public class MainWindowController implements Initializable {
         dialog.show();
     }
 
-    private void drawImageNavigationHBox() {
-        for (PicturePresentationModel p : mainWindowPM.getList().getList()) {
+    private void drawPictureNavigationHBox(Collection<PicturePresentationModel> picturePMs) {
+        ((HBox) pictureNavigationScrollPane.getContent()).getChildren().clear();
+        for (PicturePresentationModel p : picturePMs) {
             Image image = new Image(p.getFilePath(), 100, 100, false, false);
             ImageView imageView = new ImageView();
             imageView.setSmooth(true);
             imageView.setCache(true);
             imageView.setImage(image);
             imageView.setOnMouseClicked((MouseEvent t) -> {
-                ((PictureListPM) mainWindowPM.getList()).setCurrentIndex(p.getID());
-                drawSelectedImagePane();
-                populateUIFields();
+                mainWindowPM.getList().setCurrentIndex(p.getID());
+                drawSelectedPicturePane();
+                fillSelectedPictureControls();
             });
-            HBox hBox = (HBox) imageNavigationPane.getContent();
+            HBox hBox = (HBox) pictureNavigationScrollPane.getContent();
             hBox.getChildren().add(imageView);
         }
     }
 
-    private void populateUIFields() {
-        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(iptcGridpane, 0, 1))
-                .setText(mainWindowPM.getCurrentPicture().getIPTC().getHeadline());
-
-        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(iptcGridpane, 1, 1))
-                .setText(mainWindowPM.getCurrentPicture().getIPTC().getCaption());
-
-        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(iptcGridpane, 2, 1))
-                .setText(mainWindowPM.getCurrentPicture().getIPTC().getKeywords());
-
-        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(iptcGridpane, 3, 1))
-                .setText(mainWindowPM.getCurrentPicture().getIPTC().getByLine());
-
-        ((ComboBox) Helpers.getGridpaneNodeViaRowAndColumn(iptcGridpane, 4, 1)).setValue(mainWindowPM.getCurrentPicture().getIPTC().getCopyrightNotice());
-
-        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(exifGridpane, 0, 1))
-                .setText(mainWindowPM.getCurrentPicture().getEXIF().getMake());
-
-        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(exifGridpane, 1, 1))
-                .setText(String.valueOf(mainWindowPM.getCurrentPicture().getEXIF().getFNumber()));
-
-        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(exifGridpane, 2, 1))
-                .setText(String.valueOf(mainWindowPM.getCurrentPicture().getEXIF().getExposureTime()));
-
-        ((TextField) Helpers.getGridpaneNodeViaRowAndColumn(exifGridpane, 3, 1))
-                .setText(String.valueOf(mainWindowPM.getCurrentPicture().getEXIF().getISOValue()));
-
-        ((CheckBox) Helpers.getGridpaneNodeViaRowAndColumn(exifGridpane, 4, 1))
-                .setSelected(mainWindowPM.getCurrentPicture().getEXIF().getFlash());
-
-    }
-
-    private void drawCopyrightComboBox() {
-        ComboBox comboBox = new ComboBox(
-                FXCollections.observableArrayList(
-                        mainWindowPM.getCurrentPicture().getIPTC().getCopyrightNotices()));
-        comboBox.setStyle("-fx-font: 11px \"System\";");
-        iptcGridpane.add(comboBox, 1, 4);
-    }
-
-    private void resetImageNavigationPane() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void resetImageNavigationHBox() {
+        drawPictureNavigationHBox(mainWindowPM.getList().getList());
     }
 }

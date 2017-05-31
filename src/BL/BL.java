@@ -51,12 +51,16 @@ public final class BL implements BusinessLayer {
 
     @Override
     public Collection<PictureModel> getPictures(
-            String namePart,
+            String searchString,
             PhotographerModel photographerParts,
             IPTCModel iptcParts,
             EXIFModel exifParts
     ) throws Exception {
-        return dal.getPictures(namePart, photographerParts, iptcParts, exifParts);
+        if (photographerParts != null || iptcParts != null || exifParts != null) {
+            throw new UnsupportedOperationException("Detail search not implemented yet, "
+                    + "please use argument searchString for the search term");
+        }        
+        return dal.getPictures(searchString, null, null, null);
     }
 
     @Override

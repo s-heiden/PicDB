@@ -36,7 +36,7 @@ public class MainWindowPM implements MainWindowPresentationModel {
     public PicturePresentationModel getCurrentPicture() {
         return pictureListPM.getCurrentPicture();
     }
-
+    
     /**
      * ViewModel with a list of all Pictures
      */
