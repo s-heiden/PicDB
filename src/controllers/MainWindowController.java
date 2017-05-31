@@ -37,14 +37,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
-import javafx.scene.control.ImageNavigationScrollPane;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import viewModels.MainWindowPM;
-import viewModels.PictureListPM;
 import viewModels.PicturePM;
 
 public class MainWindowController implements Initializable {
@@ -63,7 +61,7 @@ public class MainWindowController implements Initializable {
     @FXML
     private HBox searchHBox;
     @FXML
-    private ScrollPane imageNavigationPane;
+    private ScrollPane pictureNavigationScrollPane;
 
     @FXML
     protected void quitAction(ActionEvent event) {
@@ -141,7 +139,7 @@ public class MainWindowController implements Initializable {
             BL.getInstance().getPictures(searchString, null, null, null).forEach((p) -> {
                 picturePMs.add(new PicturePM(p));
             });
-            drawImageNavigationHBox(picturePMs);
+            drawPictureNavigationHBox(picturePMs);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -175,27 +173,27 @@ public class MainWindowController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         mainWindowPM = new MainWindowPM();
 
-        drawSelectedImagePane();
+        drawSelectedPicturePane();
 
-        drawImageNavigationHBox(mainWindowPM.getList().getList());
+        drawPictureNavigationHBox(mainWindowPM.getList().getList());
         drawCopyrightComboBox();
         drawExposureProgramComboBox();
-        fillSelectedImageControls();
+        fillSelectedPictureControls();
     }
 
-    private void drawSelectedImagePane() {
+    private void drawSelectedPicturePane() {
         selectedImagePane.getChildren().clear();
-        Image selectedImage = new Image(mainWindowPM.getCurrentPicture().getFilePath());
+        Image selectedPicture = new Image(mainWindowPM.getCurrentPicture().getFilePath());
         ImageView selectedImageView = new ImageView();
         selectedImageView.setPreserveRatio(true);
         selectedImageView.setSmooth(true);
         selectedImageView.setCache(true);
-        selectedImageView.setImage(selectedImage);
+        selectedImageView.setImage(selectedPicture);
         selectedImageView.fitWidthProperty().bind(selectedImagePane.widthProperty());
         selectedImagePane.getChildren().add(selectedImageView);
     }
 
-    private void fillSelectedImageControls() {
+    private void fillSelectedPictureControls() {
         ((TextField) Helpers.getGridpaneNodeAt(iptcGridpane, 0, 1))
                 .setText(mainWindowPM.getCurrentPicture().getIPTC().getHeadline());
 
@@ -287,8 +285,8 @@ public class MainWindowController implements Initializable {
         dialog.show();
     }
 
-    private void drawImageNavigationHBox(Collection<PicturePresentationModel> picturePMs) {
-        ((HBox) imageNavigationPane.getContent()).getChildren().clear();
+    private void drawPictureNavigationHBox(Collection<PicturePresentationModel> picturePMs) {
+        ((HBox) pictureNavigationScrollPane.getContent()).getChildren().clear();
         for (PicturePresentationModel p : picturePMs) {
             Image image = new Image(p.getFilePath(), 100, 100, false, false);
             ImageView imageView = new ImageView();
@@ -296,16 +294,16 @@ public class MainWindowController implements Initializable {
             imageView.setCache(true);
             imageView.setImage(image);
             imageView.setOnMouseClicked((MouseEvent t) -> {
-                ((PictureListPM) mainWindowPM.getList()).setCurrentIndex(p.getID());
-                drawSelectedImagePane();
-                fillSelectedImageControls();
+                mainWindowPM.getList().setCurrentIndex(p.getID());
+                drawSelectedPicturePane();
+                fillSelectedPictureControls();
             });
-            HBox hBox = (HBox) imageNavigationPane.getContent();
+            HBox hBox = (HBox) pictureNavigationScrollPane.getContent();
             hBox.getChildren().add(imageView);
         }
     }
 
     private void resetImageNavigationHBox() {
-        drawImageNavigationHBox(mainWindowPM.getList().getList());
+        drawPictureNavigationHBox(mainWindowPM.getList().getList());
     }
 }

@@ -250,7 +250,7 @@
         </SplitPane>
     </center>
     <bottom>
-        <ScrollPane fx:id="imageNavigationPane" hbarPolicy="ALWAYS" minHeight="125.0" prefHeight="125.0" prefWidth="200.0" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+        <ScrollPane fx:id="pictureNavigationScrollPane" hbarPolicy="ALWAYS" minHeight="125.0" prefHeight="125.0" prefWidth="200.0" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
             <content>
                 <HBox maxHeight="100.0" prefHeight="100.0" spacing="8.0" style="-fx-background-color: BLACK;">
                     <padding>

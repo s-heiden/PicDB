@@ -34,10 +34,15 @@ public interface PictureListPresentationModel {
 	 * The current Index, 1 based
 	 */
 	int getCurrentIndex();
+        
+        /**
+	 * Sets the current index to the given argument.
+	 */
+	void setCurrentIndex(int index);
 
 	/**
 	 * {CurrentIndex} of {Cout}
 	 */
 	String getCurrentPictureAsString();
-
+        
 }
