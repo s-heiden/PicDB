@@ -2,6 +2,7 @@ package controllers;
 
 import BIF.SWE2.interfaces.BusinessLayer;
 import BIF.SWE2.interfaces.ExposurePrograms;
+import BIF.SWE2.interfaces.controllers.Notifiable;
 import BIF.SWE2.interfaces.models.IPTCModel;
 import BIF.SWE2.interfaces.models.PictureModel;
 import BIF.SWE2.interfaces.presentationmodels.IPTCPresentationModel;
@@ -45,7 +46,7 @@ import javafx.scene.layout.HBox;
 import viewModels.MainWindowPM;
 import viewModels.PicturePM;
 
-public class MainWindowController implements Initializable {
+public class MainWindowController implements Initializable, Notifiable {
 
     private MainWindowPresentationModel mainWindowPM;
     private Stage primaryStage;
@@ -305,5 +306,11 @@ public class MainWindowController implements Initializable {
 
     private void resetImageNavigationHBox() {
         drawPictureNavigationHBox(mainWindowPM.getList().getList());
+    }
+
+    @Override
+    public void notifiedOf(int value) {
+        // Do something outside of the the PictureNav
+        throw new UnsupportedOperationException("The clicked id was: " + value + ". Not fully supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
