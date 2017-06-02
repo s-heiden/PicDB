@@ -11,8 +11,8 @@
 <BorderPane fx:id="rootPane" minHeight="500.0" minWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainWindowController">
     <!-- 1. Menu and Search bars -->
     <top>
-        <VBox BorderPane.alignment="CENTER">
-            <children>
+      <VBox>
+         <children>
                 <!-- 1.1 Menu bar-->
                 <MenuBar>
                     <menus>
@@ -60,8 +60,8 @@
                         <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
                     </padding>
                 </HBox>
-            </children>
-        </VBox>
+         </children>
+      </VBox>
     </top>
     <!-- 2. Main part -->
     <center>
@@ -251,14 +251,5 @@
         </SplitPane>
     </center>
     <bottom>
-        <ScrollPane fx:id="pictureNavigationScrollPane" hbarPolicy="ALWAYS" minHeight="125.0" prefHeight="125.0" prefWidth="200.0" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
-            <content>
-                <HBox maxHeight="100.0" prefHeight="100.0" spacing="8.0" style="-fx-background-color: BLACK;">
-                    <padding>
-                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-                    </padding>
-                </HBox>
-            </content>
-        </ScrollPane>
     </bottom>
 </BorderPane>

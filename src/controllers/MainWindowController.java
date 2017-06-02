@@ -2,7 +2,6 @@ package controllers;
 
 import BIF.SWE2.interfaces.BusinessLayer;
 import BIF.SWE2.interfaces.ExposurePrograms;
-import BIF.SWE2.interfaces.controllers.Notifiable;
 import BIF.SWE2.interfaces.models.IPTCModel;
 import BIF.SWE2.interfaces.models.PictureModel;
 import BIF.SWE2.interfaces.presentationmodels.IPTCPresentationModel;
@@ -10,6 +9,9 @@ import BIF.SWE2.interfaces.presentationmodels.MainWindowPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.PicturePresentationModel;
 import BL.BL;
 import Models.Iptc;
+import at.twif.picturenav.PictureNav;
+import at.twif.picturenav.PictureNavHandler;
+import at.twif.picturenav.PictureNavNotifier;
 import helpers.Constants;
 import helpers.Helpers;
 import javafx.event.ActionEvent;
@@ -19,7 +21,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -34,19 +35,15 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ResourceBundle;
+import java.util.*;
 import javafx.collections.FXCollections;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import viewModels.MainWindowPM;
 import viewModels.PicturePM;
 
-public class MainWindowController implements Initializable, Notifiable {
+public class MainWindowController implements Initializable, PictureNavHandler {
 
     private MainWindowPresentationModel mainWindowPM;
     private Stage primaryStage;
@@ -58,15 +55,46 @@ public class MainWindowController implements Initializable, Notifiable {
     @FXML
     private AnchorPane selectedImagePane;
     @FXML
+    private AnchorPane navAnchorPane;
+    @FXML
     private BorderPane rootPane;
     @FXML
-    private HBox searchHBox;
+    private SplitPane splitPane;
     @FXML
-    private ScrollPane pictureNavigationScrollPane;
+    private HBox searchHBox;
+
+    private PictureNav pictureNav;
 
     @FXML
     protected void quitAction(ActionEvent event) {
         getPrimaryStage().close();
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        mainWindowPM = new MainWindowPM();
+
+        // Populate a HashMap containing IDs and their picture paths
+        Map<Integer, String> pathsForIDs = new HashMap<>();
+        for (PicturePresentationModel picturePM : mainWindowPM.getList().getList()) {
+            pathsForIDs.put(picturePM.getID(), picturePM.getFilePath());
+        }
+
+        // Create PictureNav
+        pictureNav = new PictureNav(pathsForIDs);
+
+        // Register to get notified of clicks
+        PictureNavNotifier.getInstance().register(this);
+
+        // Add PictureNav to BorderPane
+        // rootPane.setBottom(pictureNav);
+        pictureNav.setMaxHeight(125);
+        splitPane.getItems().add(pictureNav);
+
+        drawSelectedPicturePane();
+        drawCopyrightComboBox();
+        drawExposureProgramComboBox();
+        fillSelectedPictureControls();
     }
 
     // TODO: (nice to have) refactor and simplify
@@ -128,7 +156,13 @@ public class MainWindowController implements Initializable, Notifiable {
     public void resetButtonAction(ActionEvent actionEvent) {
         TextField searchTF = (TextField) searchHBox.getChildren().get(0);
         searchTF.setText("");
-        resetImageNavigationHBox();
+
+        Map<Integer, String> pathsForIDs = new HashMap<>();
+        for (PicturePresentationModel picturePM : mainWindowPM.getList().getList()) {
+            pathsForIDs.put(picturePM.getID(), picturePM.getFilePath());
+        }
+        pictureNav.setPathsForIDs(pathsForIDs);
+        pictureNav.update();
     }
 
     @FXML
@@ -140,7 +174,13 @@ public class MainWindowController implements Initializable, Notifiable {
             BL.getInstance().getPictures(searchString, null, null, null).forEach((p) -> {
                 picturePMs.add(new PicturePM(p));
             });
-            drawPictureNavigationHBox(picturePMs);
+
+            Map<Integer, String> searchPathsAndIDs = new HashMap<>();
+            for (PicturePresentationModel picturePM : picturePMs) {
+                searchPathsAndIDs.put(picturePM.getID(), picturePM.getFilePath());
+            }
+            pictureNav.setPathsForIDs(searchPathsAndIDs);
+            pictureNav.update();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -168,18 +208,6 @@ public class MainWindowController implements Initializable, Notifiable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        mainWindowPM = new MainWindowPM();
-
-        drawSelectedPicturePane();
-
-        drawPictureNavigationHBox(mainWindowPM.getList().getList());
-        drawCopyrightComboBox();
-        drawExposureProgramComboBox();
-        fillSelectedPictureControls();
     }
 
     private void drawSelectedPicturePane() {
@@ -286,31 +314,14 @@ public class MainWindowController implements Initializable, Notifiable {
         dialog.show();
     }
 
-    private void drawPictureNavigationHBox(Collection<PicturePresentationModel> picturePMs) {
-        ((HBox) pictureNavigationScrollPane.getContent()).getChildren().clear();
-        for (PicturePresentationModel p : picturePMs) {
-            Image image = new Image(p.getFilePath(), 100, 100, false, false);
-            ImageView imageView = new ImageView();
-            imageView.setSmooth(true);
-            imageView.setCache(true);
-            imageView.setImage(image);
-            imageView.setOnMouseClicked((MouseEvent t) -> {
-                mainWindowPM.getList().setCurrentIndex(p.getID());
-                drawSelectedPicturePane();
-                fillSelectedPictureControls();
-            });
-            HBox hBox = (HBox) pictureNavigationScrollPane.getContent();
-            hBox.getChildren().add(imageView);
-        }
-    }
-
-    private void resetImageNavigationHBox() {
-        drawPictureNavigationHBox(mainWindowPM.getList().getList());
-    }
-
+    // private void resetImageNavigationHBox() {
+    // drawPictureNavigationHBox(mainWindowPM.getList().getList());
+    // TODO:
+    // }
     @Override
-    public void notifiedOf(int value) {
-        // Do something outside of the the PictureNav
-        throw new UnsupportedOperationException("The clicked id was: " + value + ". Not fully supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void handle(int clickedID) {
+        mainWindowPM.getList().setCurrentIndex(clickedID);
+        drawSelectedPicturePane();
+        fillSelectedPictureControls();
     }
 }
