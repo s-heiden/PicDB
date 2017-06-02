@@ -4,8 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:controller="controllers.PhotographersController" 
-            fx:id="rootPanePhotographer" 
+<BorderPane fx:controller="controllers.PhotographersController"
             minHeight="-Infinity" 
             minWidth="-Infinity"
             prefHeight="400" 
@@ -16,22 +15,17 @@
     <!-- Left Panel: control buttons-->
     <left>
         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-            <Button prefWidth="70.0" text="New" onAction="#addNewPhotographer">
+            <Button fx:id="newButton" prefWidth="70.0" text="New" onAction="#addNewPhotographer">
                 <VBox.margin>
                     <Insets top="10.0" />
                 </VBox.margin>
             </Button>
-            <Button prefWidth="70.0" text="Edit" onAction="#editPhotographer">
+            <Button fx:id="saveButton" prefWidth="70.0" text="Save" onAction="#savePhotographerData">
                 <VBox.margin>
                     <Insets top="10.0" />
                 </VBox.margin>
             </Button>
-            <Button prefWidth="70.0" text="Save" onAction="#savePhotographerData">
-                <VBox.margin>
-                    <Insets top="10.0" />
-                </VBox.margin>
-            </Button>
-            <Button prefWidth="70.0" text="Delete" onAction="#deletePhotographer">
+            <Button fx:id="deleteButton" prefWidth="70.0" text="Delete" onAction="#deletePhotographer">
                 <VBox.margin>
                     <Insets top="10.0" />
                 </VBox.margin>
@@ -42,12 +36,7 @@
     <!-- Center Panel: photographer list-->
     <center>
         <ScrollPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-
-            <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0">
-
-                <Label layoutX="21.0" layoutY="14.0" text="Photographer1" />
-                <Label layoutX="21.0" layoutY="36.0" text="Photographer2" />
-
+            <AnchorPane fx:id="listAnchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0">
             </AnchorPane>
 
             <BorderPane.margin>
@@ -73,9 +62,9 @@
                 <Label text="Vorname:" />
                 <Label text="Nachname:" GridPane.rowIndex="1" />
                 <Label text="Geburtstag:" GridPane.rowIndex="2" />
-                <TextField fx:id="vorname_text" GridPane.columnIndex="1" />
-                <TextField fx:id="nachname_text" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <TextField fx:id="geburtstag_text" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField fx:id="firstNameTextField" GridPane.columnIndex="1" />
+                <TextField fx:id="lastNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" promptText="Pflichtfeld"/>
+                <TextField fx:id="birthdayTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" promptText="yyyy-MM-dd"/>
                 <padding>
                     <Insets right="10.0" />
                 </padding>
@@ -85,7 +74,7 @@
                     <Insets bottom="5.0" top="10.0" />
                 </padding>
             </Label>
-            <TextArea maxWidth="-Infinity" prefHeight="200.0" prefWidth="215.0" />
+            <TextArea fx:id="notesTextField" maxWidth="-Infinity" prefHeight="200.0" prefWidth="215.0" />
 
             <BorderPane.margin>
                 <Insets left="10.0" />

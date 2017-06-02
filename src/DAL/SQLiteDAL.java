@@ -71,7 +71,6 @@ public class SQLiteDAL implements DataAccessLayer {
      * Establishes the connection, sets up the database if there are no tables.
      */
     private SQLiteDAL() {
-        System.out.println("creating SQLiteDAL()");
         openDBConnection();
         setupDatabase();
     }
@@ -112,7 +111,6 @@ public class SQLiteDAL implements DataAccessLayer {
             statement.executeUpdate(CREATE_TABLE_PICTURES);
             statement.executeUpdate(CREATE_TABLE_CAMERAS);
             statement.executeUpdate(CREATE_TABLE_PHOTOGRAPHERS);
-            System.out.println("setupDatabase()");
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
