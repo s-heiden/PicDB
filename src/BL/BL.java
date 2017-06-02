@@ -198,5 +198,4 @@ public final class BL implements BusinessLayer {
     public CameraModel getCamera(int ID) {
         return dal.getCamera(ID);
     }
-
 }
