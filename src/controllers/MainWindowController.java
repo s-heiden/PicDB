@@ -1,6 +1,5 @@
 package controllers;
 
-import BIF.SWE2.interfaces.BusinessLayer;
 import BIF.SWE2.interfaces.ExposurePrograms;
 import BIF.SWE2.interfaces.models.IPTCModel;
 import BIF.SWE2.interfaces.models.PictureModel;
@@ -8,7 +7,6 @@ import BIF.SWE2.interfaces.presentationmodels.IPTCPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.MainWindowPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.PicturePresentationModel;
 import BL.BL;
-import Models.Iptc;
 import at.twif.picturenav.PictureNav;
 import at.twif.picturenav.PictureNavHandler;
 import at.twif.picturenav.PictureNavNotifier;
@@ -43,6 +41,9 @@ import javafx.scene.layout.HBox;
 import viewModels.MainWindowPM;
 import viewModels.PicturePM;
 
+/**
+ * The controller for the main window.
+ */
 public class MainWindowController implements Initializable, PictureNavHandler {
 
     private MainWindowPresentationModel mainWindowPM;
@@ -142,16 +143,25 @@ public class MainWindowController implements Initializable, PictureNavHandler {
         }
     }
 
+    /**
+     * Shows a help dialog.
+     */
     @FXML
     public void showHelpAction(ActionEvent actionEvent) {
         showDialog("Help", "Please visit our help page at:\n\nhttps://github.com/s-heiden/PicDB");
     }
 
+    /**
+     * Shows an about dialog.
+     */
     @FXML
     public void showAboutAction(ActionEvent actionEvent) {
         showDialog("About", "PicDB 1.0\n(c) Team\n2017");
     }
 
+    /**
+     * Resets the search text field.
+     */
     @FXML
     public void resetButtonAction(ActionEvent actionEvent) {
         TextField searchTF = (TextField) searchHBox.getChildren().get(0);
@@ -165,6 +175,9 @@ public class MainWindowController implements Initializable, PictureNavHandler {
         pictureNav.update();
     }
 
+    /**
+     * Searches for the strings given in the search text field.
+     */
     @FXML
     public void searchButtonAction(ActionEvent actionEvent) {
         String searchString = ((TextField) searchHBox.getChildren().get(0)).getText();
@@ -186,16 +199,27 @@ public class MainWindowController implements Initializable, PictureNavHandler {
         }
     }
 
+    /**
+     * Generates a report for all images.
+     */
     @FXML
     public void generateImageReportAction(ActionEvent actionEvent) {
+        // TODO:
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Generates a report for all tags.
+     */
     @FXML
     public void generateTagReportAction(ActionEvent actionEvent) {
+        // TODO:
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Shows the photographer view.
+     */
     @FXML
     public void showPhotographersAction(ActionEvent actionEvent) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/PhotographersView.fxml"));
@@ -314,10 +338,6 @@ public class MainWindowController implements Initializable, PictureNavHandler {
         dialog.show();
     }
 
-    // private void resetImageNavigationHBox() {
-    // drawPictureNavigationHBox(mainWindowPM.getList().getList());
-    // TODO:
-    // }
     @Override
     public void handle(int clickedID) {
         mainWindowPM.getList().setCurrentIndex(clickedID);

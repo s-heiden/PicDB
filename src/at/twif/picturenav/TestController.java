@@ -7,6 +7,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+/**
+ * A test controller which shows the use of this UI component.
+ */
 public class TestController implements Initializable, PictureNavHandler {
     private Stage primaryStage;
     

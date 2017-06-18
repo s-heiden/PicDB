@@ -1,5 +1,8 @@
 package DAL;
 
+/**
+ * An enumeration of all possible database table names.
+ */
 public enum DBTable {
     PICTURES, PHOTOGRAPHERS, CAMERAS;
 

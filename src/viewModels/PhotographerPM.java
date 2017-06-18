@@ -5,6 +5,9 @@ import BIF.SWE2.interfaces.presentationmodels.PhotographerPresentationModel;
 
 import java.time.LocalDate;
 
+/**
+ * Photographer Presentation Model.
+ */
 public class PhotographerPM implements PhotographerPresentationModel {
 
     private PhotographerModel photographerModel;

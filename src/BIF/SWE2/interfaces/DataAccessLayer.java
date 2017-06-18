@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import BIF.SWE2.interfaces.models.*;
 
+
 public interface DataAccessLayer {
 	/**
 	 * Returns a filterd list of Pictures from the directory, based on a

@@ -1,9 +1,5 @@
 package at.twif.picturenav;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
@@ -12,8 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
- * @author stefan
+ * A test application to demonstrate this view component.
  */
 public class App extends Application {
 

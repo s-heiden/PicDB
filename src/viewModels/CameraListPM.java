@@ -8,11 +8,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * The camera list presentation model.
+ */
 public class CameraListPM implements CameraListPresentationModel {
 
     private static int currentCameraIndex = 0;
     private List<CameraPresentationModel> cameraPMs;
 
+    /**
+     * Constructor.
+     */
     public CameraListPM(List<CameraModel> cameras) {
         cameraPMs = new ArrayList<>();
         cameras.forEach((camera) -> {

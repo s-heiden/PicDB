@@ -1,5 +1,8 @@
 package BIF.SWE2.interfaces;
 
+/**
+ * Defines possible ISORatings.
+ */
 public enum ISORatings {
 	NotDefined(0),
 	Good(1),

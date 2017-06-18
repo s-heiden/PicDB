@@ -5,9 +5,11 @@ import BIF.SWE2.interfaces.presentationmodels.PhotographerListPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.PhotographerPresentationModel;
 import java.util.ArrayList;
 
-import java.util.Collection;
 import java.util.List;
 
+/**
+ * Photographer List Presentation Model.
+ */
 public class PhotographerListPM implements PhotographerListPresentationModel {
 
     private List<PhotographerPresentationModel> photographerPMs;

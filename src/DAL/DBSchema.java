@@ -1,13 +1,20 @@
 package DAL;
 
-
+/**
+ * Encapsulates database related methods and values.
+ */
 public final class DBSchema {
 
+    /**
+     * The URL of the database can be set by the user in resources/properties.
+     */
     public static final String DATABASE_URL = helpers.Helpers.getDatabaseName();
 
-    // private ctor to prevent instantiation
     private DBSchema() {}
     
+    /**
+     * Contains the database columns relating to Pictures as String constants.
+     */
     public static final class Pictures {
         public static final String TABLE_NAME = "pictures";
         public static final String COLUMN_PICTURES_ID = "id";
@@ -26,6 +33,9 @@ public final class DBSchema {
         public static final String COLUMN_PICTURES_EXIF_EXPOSUREPROGRAM = "exif_exposureprogram";
     }
 
+    /**
+     * Contains the database columns relating to Cameras as String constants.
+     */
     public static final class Cameras {
         public static final String TABLE_NAME = "cameras";
         public static final String COLUMN_CAMERAS_ID = "id";
@@ -37,6 +47,9 @@ public final class DBSchema {
         public static final String COLUMN_CAMERAS_ISOLIMIT_ACCEPTABLE = "iso_limit_acceptable";
     }
 
+    /**
+     * Contains the database columns relating to Photographers as String constants.
+     */
     public static final class Photographers {
         public static final String TABLE_NAME = "photographers";
         public static final String COLUMN_PHOTOGRAPHERS_ID = "id";

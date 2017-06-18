@@ -15,9 +15,6 @@ public class Photographer implements PhotographerModel {
     private LocalDate birthDay;
     private String notes;
 
-    /**
-     * Database primary key
-     */
     @Override
     public int getID() {
         return id;
@@ -28,9 +25,6 @@ public class Photographer implements PhotographerModel {
         this.id = value;
     }
 
-    /**
-     * Firstname, including middle name
-     */
     @Override
     public String getFirstName() {
         return firstName;
@@ -41,9 +35,6 @@ public class Photographer implements PhotographerModel {
         this.firstName = firstName;
     }
 
-    /**
-     * Lastname
-     */
     @Override
     public String getLastName() {
         return lastName;
@@ -54,9 +45,6 @@ public class Photographer implements PhotographerModel {
         this.lastName = lastName;
     }
 
-    /**
-     * Birthday
-     */
     @Override
     public LocalDate getBirthDay() {
         return birthDay;
@@ -67,9 +55,6 @@ public class Photographer implements PhotographerModel {
         this.birthDay = birthDay;
     }
 
-    /**
-     * Notes
-     */
     @Override
     public String getNotes() {
         return notes;

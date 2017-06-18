@@ -15,11 +15,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+/**
+ * The BusinessLayer implementation used by the application.
+ */
 public final class BL implements BusinessLayer {
 
     private static BL blInstance;
     private static SQLiteDAL dal;
 
+    /**
+     * Returns the single static instance.
+     */
     public static BL getInstance() {
         if (blInstance == null) {
             blInstance = new BL();
