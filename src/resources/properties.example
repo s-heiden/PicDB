@@ -1,1 +1,1 @@
-database_name=jdbc:sqlite:YOUR_DB_NAME.db
+database_name=jdbc:sqlite:picdb.db

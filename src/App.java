@@ -5,8 +5,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.log4j.Logger;
 
 public class App extends Application {
+        
+    static Logger log = Logger.getLogger(App.class.getName());
     
     @Override
     public void start(Stage stage) throws Exception {

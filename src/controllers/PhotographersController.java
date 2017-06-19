@@ -24,9 +24,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.ResourceBundle;
+import org.apache.log4j.Logger;
 
 public class PhotographersController  implements Initializable {
 
+    static Logger log = Logger.getLogger(PhotographersController.class.getName());
     private static BL bl;
     private static PhotographerListPM photographerList;
     private boolean isPhotographerNew = false;
@@ -56,6 +58,7 @@ public class PhotographersController  implements Initializable {
             photographerModels = (List<PhotographerModel>) bl.getPhotographers();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e);
         }
         if (photographerList == null) {
             photographerList = PhotographerListPM.getInstance(photographerModels);
@@ -122,7 +125,7 @@ public class PhotographersController  implements Initializable {
             updatePhotographersList();
             clearInputFields();
         } catch(Exception e) {
-            System.out.println("Cannot delete photographer");
+            log.error("Cannot delete photographer");
             e.printStackTrace();
         }
     }
@@ -132,8 +135,10 @@ public class PhotographersController  implements Initializable {
     private void saveIntoDB(PhotographerPM photographerPM) {
         try {
             bl.save(photographerPM.getPhotographerModel());
+            log.info("photographer saved to DB");
         } catch (Exception e) {
             e.printStackTrace();
+            log.error("Could not save Photographer to DB " + e);
         }
     }
 
@@ -161,6 +166,7 @@ public class PhotographersController  implements Initializable {
             photographerPM.setBirthDay(parseDate(birthday)); // validate date format
         } catch (DateTimeParseException e) {
             birthdayTextField.setStyle("-fx-text-box-border: red;");
+            log.error("birthday is not valid");
             return false;
         }
         return true;
