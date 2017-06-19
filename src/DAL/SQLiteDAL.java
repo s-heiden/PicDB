@@ -18,6 +18,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * The DataAccessLayer implementation used by PicDB.
+ */
 public class SQLiteDAL implements DataAccessLayer {
 
     private static SQLiteDAL sqLiteDalInstance;
@@ -60,6 +63,9 @@ public class SQLiteDAL implements DataAccessLayer {
                     Photographers.COLUMN_PHOTOGRAPHERS_BIRTHDAY + " LONG," +
                     Photographers.COLUMN_PHOTOGRAPHERS_NOTES + " VARCHAR(512));";
 
+    /**
+     * Returns the single static instance of this class.
+     */
     public static SQLiteDAL getInstance() {
         if (sqLiteDalInstance == null) {
             sqLiteDalInstance = new SQLiteDAL();
@@ -116,6 +122,9 @@ public class SQLiteDAL implements DataAccessLayer {
         }
     }
 
+    /**
+     * Returns true if an entity with the given id exists in the given table.
+     */
     public boolean containsRowForTable(int id, DBTable table) {
         PreparedStatement statement = null;
         String string = "SELECT id FROM " + table + " WHERE id = ?";
@@ -416,6 +425,9 @@ public class SQLiteDAL implements DataAccessLayer {
         }
     }
 
+    /**
+     * Returns an ArrayList<Object> of all rows of the given table, de-serialized into corresponding objects.
+     */
     public ArrayList<Object> getObjectsFrom(DBTable table) {
         ArrayList<Object> objects = new ArrayList<>();
         final String string = "SELECT * FROM " + table;
@@ -498,6 +510,9 @@ public class SQLiteDAL implements DataAccessLayer {
         }
     }
 
+    /**
+     * Returns the next possible id for the given table.
+     */
     public int nextIdFor(DBTable table) {
         int id = 1;
         PreparedStatement statement = null;

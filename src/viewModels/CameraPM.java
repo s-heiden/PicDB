@@ -6,6 +6,9 @@ import BIF.SWE2.interfaces.presentationmodels.CameraPresentationModel;
 
 import java.time.LocalDate;
 
+/**
+ * The camera presentation model.
+ */
 public class CameraPM implements CameraPresentationModel {
 
     private CameraModel cameraModel;

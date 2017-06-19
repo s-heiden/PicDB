@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Picture List Presentation Model.
+ */
 public class PictureListPM implements PictureListPresentationModel {
 
     private List<PicturePresentationModel> picturePMs;

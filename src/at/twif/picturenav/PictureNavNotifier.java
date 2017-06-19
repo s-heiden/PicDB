@@ -11,6 +11,9 @@ public class PictureNavNotifier {
     private PictureNavNotifier() {
     }
 
+    /**
+     * Returns the single static instance of this class.
+     */
     public static PictureNavNotifier getInstance() {
         return instance;
     }
@@ -26,7 +29,10 @@ public class PictureNavNotifier {
         }
     }
 
-
+    /**
+     * Registers an object that will handle the id of the clicked picture.
+     * @param pictureNavHandler 
+     */
     public void register(PictureNavHandler pictureNavHandler) {
         this.pictureNavHandler = pictureNavHandler;
     }

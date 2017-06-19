@@ -18,16 +18,28 @@ import java.util.Random;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 
+/**
+ * Provides helper functions used in the project.
+ */
 public class Helpers {
 
+    /**
+     * Returns a LocalDate corresponding to the given integer representing seconds since 1970-01-01.
+     */
     public static LocalDate toLocalDate(long l) {
         return Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
+    /**
+     * Returns an integer representing seconds since 1970-01-01 for the given LocalDate.
+     */
     public static long toLong(LocalDate localDate) {
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()).getTime();
     }
 
+    /**
+     * Closes a statement silently and catches possible SQLException.
+     */
     public static void closeStatementSilently(PreparedStatement statement) {
         try {
             if (statement != null) {
@@ -38,6 +50,9 @@ public class Helpers {
         }
     }
 
+    /**
+     * Closes a result set silently and catches possible SQLException.
+     */
     public static void closeResultSilently(ResultSet result) {
         try {
             if (result != null) {
@@ -48,7 +63,10 @@ public class Helpers {
         }
     }
 
-    public static String getRandomString(int length) {        
+    /**
+     * Returns a random string of the given length.
+     */
+    public static String getRandomString(int length) {
         StringBuilder builder = new StringBuilder();
         Random rnd = new Random();
         while (builder.length() < length) {
@@ -58,11 +76,17 @@ public class Helpers {
         return builder.toString();
     }
 
+    /**
+     * Returns true if the file of the given filename exists in the picture directory.
+     */
     public static boolean existsInPicturePath(String filename) {
         Path path = FileSystems.getDefault().getPath(Constants.PICTURE_PATH, filename);
         return Files.exists(path) && !Files.isDirectory(path);
     }
 
+    /**
+     * Deletes a the file with the given filename from the picture directory.
+     */
     public static void deleteFromPicturePath(String filename) {
         if (filename != null) {
             try {
@@ -74,17 +98,26 @@ public class Helpers {
             }
         }
     }
-    
+
+    /**
+     * Returns a random enum.
+     */
     public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
         int x = new Random().nextInt(clazz.getEnumConstants().length);
         return clazz.getEnumConstants()[x];
     }
 
+    /**
+     * Returns the gridpane node in the given gridpane at the given coordinates.
+     */
     public static Node getGridpaneNodeAt(GridPane gridpane, int row, int column) {
         int rows = gridpane.getChildren().size() / helpers.Constants.COLS_IN_METAINFO_GRIDPANE;
         return gridpane.getChildren().get(column * rows + row);
     }
 
+    /**
+     * Reads the database name from src/resources/properties.
+     */
     public static String getDatabaseName() {
         Properties prop = new Properties();
         InputStream input = null;
@@ -106,4 +139,3 @@ public class Helpers {
         return "";
     }
 }
-

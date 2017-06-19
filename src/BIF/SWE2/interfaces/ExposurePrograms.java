@@ -1,5 +1,8 @@
 package BIF.SWE2.interfaces;
 
+/**
+ * Defines possible ExposurePrograms.
+ */
 public enum ExposurePrograms {
     NotDefined(0),
     Manual(1),
@@ -17,10 +20,16 @@ public enum ExposurePrograms {
         this.value = value;
     }
 
+    /**
+     * Returns the value of this object.
+     */
     public int getValue() {
         return value;
     }
 
+    /**
+     * Returns the String representation of all possible values as an array.
+     */
     public static String[] getNamesAsArray() {
         ExposurePrograms[] exposurePrograms = values();
         String[] names = new String[exposurePrograms.length];

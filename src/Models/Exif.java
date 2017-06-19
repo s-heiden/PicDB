@@ -3,6 +3,9 @@ package Models;
 import BIF.SWE2.interfaces.ExposurePrograms;
 import BIF.SWE2.interfaces.models.EXIFModel;
 
+/**
+ * Exif information.
+ */
 public class Exif implements EXIFModel {
 
     private String make;
@@ -12,9 +15,15 @@ public class Exif implements EXIFModel {
     private boolean flash;
     private ExposurePrograms exposureProgram;
 
+    /**
+     * The default constructor.
+     */
     public Exif() {
     }
 
+    /**
+     * A custom constructor that sets all fields.
+     */
     public Exif(String make, double fNumber, double exposureTime, double isoValue, boolean flash, ExposurePrograms exposureProgram) {
         this.make = make;
         this.fNumber = fNumber;
@@ -44,9 +53,6 @@ public class Exif implements EXIFModel {
         this.fNumber = fNumber;
     }
 
-    /**
-     * Exposure time
-     */
     @Override
     public double getExposureTime() {
         return exposureTime;
@@ -57,9 +63,6 @@ public class Exif implements EXIFModel {
         this.exposureTime = exposureTime;
     }
 
-    /**
-     * ISO value
-     */
     @Override
     public double getISOValue() {
         return isoValue;
@@ -70,9 +73,6 @@ public class Exif implements EXIFModel {
         this.isoValue = isoValue;
     }
 
-    /**
-     * Flash yes/no
-     */
     @Override
     public boolean getFlash() {
         return flash;
@@ -83,9 +83,6 @@ public class Exif implements EXIFModel {
         this.flash = flash;
     }
 
-    /**
-     * The exposure program
-     */
     @Override
     public ExposurePrograms getExposureProgram() {
         return exposureProgram;

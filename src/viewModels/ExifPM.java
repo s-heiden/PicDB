@@ -7,6 +7,9 @@ import BIF.SWE2.interfaces.presentationmodels.CameraPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.EXIFPresentationModel;
 import helpers.Constants;
 
+/**
+ * The exif presentation model.
+ */
 public class ExifPM implements EXIFPresentationModel {
 
     private EXIFModel exifModel;

@@ -4,6 +4,9 @@ import BIF.SWE2.interfaces.BusinessLayer;
 import BIF.SWE2.interfaces.presentationmodels.SearchPresentationModel;
 import BL.BL;
 
+/**
+ * The search presentation model.
+ */
 public class SearchPM implements SearchPresentationModel {
 
     private String searchText = "";
@@ -34,7 +37,6 @@ public class SearchPM implements SearchPresentationModel {
     public int getResultCount() {
         int count = 0;
         try {
-            // TODO: adapt to account for photographer, iptc, exif
             count = bl.getPictures(searchText, null, null, null).size();
         } catch (Exception e) {
             e.printStackTrace();

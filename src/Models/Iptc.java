@@ -13,9 +13,15 @@ public class Iptc implements IPTCModel {
     private String byLine;
     private String copyrightNotice;
 
+    /**
+     * The default constructor.
+     */
     public Iptc() {
     }
 
+    /**
+     * Custom constructor which sets all fields.
+     */
     public Iptc(String caption, String headline, String keywords, String byLine, String copyrightNotice) {
         this.caption = caption;
         this.headline = headline;
@@ -24,9 +30,6 @@ public class Iptc implements IPTCModel {
         this.copyrightNotice = copyrightNotice;
     }
 
-    /**
-     * A list of keywords
-     */
     @Override
     public String getKeywords() {
         return keywords;
@@ -37,9 +40,6 @@ public class Iptc implements IPTCModel {
         this.keywords = keywords;
     }
 
-    /**
-     * Name of the photographer
-     */
     @Override
     public String getByLine() {
         return byLine;
@@ -50,9 +50,6 @@ public class Iptc implements IPTCModel {
         this.byLine = byLine;
     }
 
-    /**
-     * copyright notes.
-     */
     @Override
     public String getCopyrightNotice() {
         return copyrightNotice;
@@ -63,9 +60,6 @@ public class Iptc implements IPTCModel {
         this.copyrightNotice = copyrightNotice;
     }
 
-    /**
-     * Summary/Headline of the picture
-     */
     @Override
     public String getHeadline() {
         return headline;
@@ -76,9 +70,6 @@ public class Iptc implements IPTCModel {
         this.headline = headline;
     }
 
-    /**
-     * Caption/Abstract, a description of the picture
-     */
     @Override
     public String getCaption() {
         return caption;

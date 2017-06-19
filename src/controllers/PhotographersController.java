@@ -26,26 +26,33 @@ import java.util.List;
 import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 
-public class PhotographersController  implements Initializable {
+/**
+ * The controller for the photographer view.
+ */
+public class PhotographersController implements Initializable {
 
     static Logger log = Logger.getLogger(PhotographersController.class.getName());
     private static BL bl;
     private static PhotographerListPM photographerList;
     private boolean isPhotographerNew = false;
 
-    @FXML private TextField firstNameTextField;
-    @FXML private TextField lastNameTextField;
-    @FXML private TextField birthdayTextField;
-    @FXML private TextArea notesTextField;
-    @FXML private AnchorPane listAnchorPane;
-    @FXML private Button saveButton;
-    @FXML private Button deleteButton;
-    @FXML private Button newButton;
+    @FXML
+    private TextField firstNameTextField;
+    @FXML
+    private TextField lastNameTextField;
+    @FXML
+    private TextField birthdayTextField;
+    @FXML
+    private TextArea notesTextField;
+    @FXML
+    private AnchorPane listAnchorPane;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button deleteButton;
+    @FXML
+    private Button newButton;
 
-    /**
-     * It is not possible to access fxml elements in controller ctor
-     * => use initialize() of Initializable interface
-     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         if (bl == null) {
@@ -71,8 +78,9 @@ public class PhotographersController  implements Initializable {
     }
 
     // ---------------- button actions ----------------------------------
-
-    // NEW
+    /**
+     * Adds a new Photographer.
+     */
     public void addNewPhotographer() {
         isPhotographerNew = true;
         unselectPhotographers();
@@ -83,7 +91,9 @@ public class PhotographersController  implements Initializable {
         saveButton.setDisable(false);
     }
 
-    // SAVE
+    /**
+     * Saves a photographer with the info given in the respective textfields.
+     */
     public void savePhotographerData(ActionEvent actionEvent) {
         // reset GUI
         lastNameTextField.setStyle(null);
@@ -91,17 +101,17 @@ public class PhotographersController  implements Initializable {
 
         //  do we create new photographer or editing existing one?
         PhotographerPM photographerPM;
-        if(isPhotographerNew) {
+        if (isPhotographerNew) {
             photographerPM = new PhotographerPM(new Photographer());
         } else {
             photographerPM = (PhotographerPM) photographerList.getCurrentPhotographer();
         }
 
-        if(!saveUnserInputIntoPhotographer(photographerPM)) {
+        if (!saveUnserInputIntoPhotographer(photographerPM)) {
             return;
         }
 
-        if(photographerPM.isValid()) {
+        if (photographerPM.isValid()) {
             saveIntoDB(photographerPM);
         } else {
             showInputError(photographerPM);
@@ -109,7 +119,7 @@ public class PhotographersController  implements Initializable {
         }
 
         // update photographer list and GUI
-        if(isPhotographerNew) {
+        if (isPhotographerNew) {
             photographerList.addNewPhotographer(photographerPM);
             isPhotographerNew = false;
             listAnchorPane.setDisable(false);
@@ -117,7 +127,9 @@ public class PhotographersController  implements Initializable {
         updatePhotographersList();
     }
 
-    // DELETE
+    /**
+     * Deletes the photographer with the current photographer index.
+     */
     public void deletePhotographer(ActionEvent actionEvent) {
         try {
             photographerList.deleteCurrentPhotographer();
@@ -131,7 +143,6 @@ public class PhotographersController  implements Initializable {
     }
 
     // ---------------- SAVE helper methods ----------------------------------
-
     private void saveIntoDB(PhotographerPM photographerPM) {
         try {
             bl.save(photographerPM.getPhotographerModel());
@@ -143,15 +154,17 @@ public class PhotographersController  implements Initializable {
     }
 
     private void showInputError(PhotographerPM photographerPM) {
-        if(!photographerPM.isValidLastName()) {
+        if (!photographerPM.isValidLastName()) {
             lastNameTextField.setStyle("-fx-text-box-border: red;");
         }
-        if(!photographerPM.isValidBirthDay()) {
+        if (!photographerPM.isValidBirthDay()) {
             birthdayTextField.setStyle("-fx-text-box-border: red;");
         }
     }
 
-    /** Returns false if the input birthday date has wrong format */
+    /**
+     * Returns false if the input birthday date has wrong format
+     */
     private boolean saveUnserInputIntoPhotographer(PhotographerPM photographerPM) {
         String firstName = firstNameTextField.getText().trim();
         String lastName = lastNameTextField.getText().trim();
@@ -212,8 +225,8 @@ public class PhotographersController  implements Initializable {
 
     private void showCurrentPhotographerData(int id) {
         List<PhotographerPresentationModel> list = photographerList.getList();
-        for(PhotographerPresentationModel p : list) {
-            if(p.getID()==id) {
+        for (PhotographerPresentationModel p : list) {
+            if (p.getID() == id) {
                 firstNameTextField.setText(p.getFirstName());
                 lastNameTextField.setText(p.getLastName());
                 birthdayTextField.setText(p.getBirthDay().toString());
@@ -225,7 +238,7 @@ public class PhotographersController  implements Initializable {
 
     private void unselectPhotographers() {
         ObservableList<Node> labelList = listAnchorPane.getChildren();
-        for(Node node : labelList) {
+        for (Node node : labelList) {
             node.setStyle("-fx-background-color: none");
         }
     }

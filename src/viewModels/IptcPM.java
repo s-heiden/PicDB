@@ -6,6 +6,9 @@ import helpers.Constants;
 
 import java.util.Collection;
 
+/**
+ * The iptc presentation model.
+ */
 public class IptcPM implements IPTCPresentationModel {
 
     private IPTCModel iptcModel;

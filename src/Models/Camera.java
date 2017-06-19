@@ -17,6 +17,9 @@ public class Camera implements CameraModel {
     private double isoLimitGood;
     private double isoLimitAcceptable;
 
+    /**
+     * Default constructor.
+     */
     public Camera() {
     }
 
@@ -42,13 +45,17 @@ public class Camera implements CameraModel {
     }
 
     /**
-     * Returns database primary key
+     * Returns database primary key.
      */
     @Override
     public int getID() {
         return id;
     }
 
+    /**
+     * 
+     * @param id 
+     */
     @Override
     public void setID(int id) {
         this.id = id;
