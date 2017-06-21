@@ -33,11 +33,6 @@ public final class BL implements BusinessLayer {
 
     private static BL blInstance;
     private static SQLiteDAL dal;
-<<<<<<< HEAD
-     
-=======
-    
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
     /**
      * Returns the single static instance.
      */
@@ -220,15 +215,12 @@ public final class BL implements BusinessLayer {
         return dal.getCamera(ID);
     }
     
-<<<<<<< HEAD
     /**
      * makes a directory, if it does not exist yet.
      * 
      * @param dirPath
      * @throws SecurityException if it fails to make the directory
      */
-=======
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
     public void makeDir(String dirPath) throws SecurityException {
         File dir = new File(dirPath);
         if (!dir.exists()) {
@@ -240,37 +232,24 @@ public final class BL implements BusinessLayer {
         }
     }
      
-<<<<<<< HEAD
     /**
      * generates a report pdf-file in the reports directory
      * which lists all keywords that occur and the number of their occurrences.
      */
-=======
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
     public void generateTagReport() {
         Map<String, Integer> keywordStrings = dal.getKeywordStrings();
         Map<String, Integer> keywordCount = new HashMap<>();
         String[] splitString;
         for (String keywordString : keywordStrings.keySet()) {
-<<<<<<< HEAD
             splitString = keywordString.split("[,;\\s]");
-=======
-            splitString = keywordString.split("[,;\r\n]");
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
             for (String keyword : splitString) {
                 keyword = keyword
                         .toUpperCase()
                         .replaceAll("[^-_0-9a-zA-Z]", "");
                 if (keywordCount.containsKey(keyword)) {
-<<<<<<< HEAD
                     keywordCount.put(keyword, keywordCount.get(keyword) + keywordStrings.get(keywordString));
                 } else {
                     keywordCount.put(keyword, keywordStrings.get(keywordString));
-=======
-                    keywordCount.put(keyword, keywordCount.get(keyword) + 1);
-                } else {
-                    keywordCount.put(keyword, 1);
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
                 }
             }
         }
@@ -300,26 +279,19 @@ public final class BL implements BusinessLayer {
         }
     }
 
-<<<<<<< HEAD
     /**
      * generates an report pdf-file of the active Image, including the picture,
      * the EXIF- and IPTC-Information and the Photographer, if known.
      * @param ID  - must be a valid picture-ID
      */
-=======
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
     public void generateImageReport(int ID) {
         PictureModel picture = getPicture(ID);
         Document document = new Document();
         try {
             makeDir(REPORT_PATH);
             PdfWriter.getInstance(document, new FileOutputStream(REPORT_PATH + "/"
-<<<<<<< HEAD
                     + IMG_REPORT_FILENAME + "_"
                     + picture.getFileName().toString() + ".pdf"));
-=======
-                    + IMG_REPORT_FILENAME + ".pdf"));
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
             document.open();
             document.addTitle("Image-Report");
             Image image = Image.getInstance(PICTURE_PATH + "/"
@@ -327,11 +299,6 @@ public final class BL implements BusinessLayer {
             image.scaleToFit(525f, 750f);
             document.add(image);
             
-<<<<<<< HEAD
-            System.out.println(document.toString() + picture.toString());
-            
-=======
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
             Font textFont = new Font(Font.getFamily(TEXT_FONT_FAMILY),
                     TEXT_FONT_SIZE, Font.getStyleValue(TEXT_FONT_STYLE));
             Font headlineFont = new Font(Font.getFamily(HEADLINE_FONT_FAMILY),
@@ -347,18 +314,10 @@ public final class BL implements BusinessLayer {
             EXIFPara.add(new Chunk(parseListFormatted(picture.getEXIF()), textFont).setLineHeight(15.0f));
             document.add(EXIFPara);
             
-<<<<<<< HEAD
             IPTCPara.add(new Chunk("IPTC-Informationen:\n\n", headlineFont));
             IPTCPara.add(new Chunk(parseListFormatted(picture.getIPTC()), textFont).setLineHeight(15.0f));
             document.add(IPTCPara);
 
-=======
-             IPTCPara.add(new Chunk("IPTC-Informationen:\n\n", headlineFont));
-            IPTCPara.add(new Chunk(parseListFormatted(picture.getIPTC()), textFont).setLineHeight(15.0f));
-            document.add(IPTCPara);
-
-            PhotographerModel m = picture.getPhotographer();
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
             String photogr = parseListFormatted(picture.getPhotographer());
             PhotographerPara.add(new Chunk("Fotograf:\n\n", headlineFont));
             PhotographerPara.add(new Chunk(photogr != null ? photogr : "Fotograf is unbekannt.", textFont).setLineHeight(15.0f));
@@ -371,7 +330,6 @@ public final class BL implements BusinessLayer {
         }
     }
     
-<<<<<<< HEAD
     /**
      * converts an Object with JSON-like toString() functions into a
      * line by line paragraph relating keys an values
@@ -382,21 +340,11 @@ public final class BL implements BusinessLayer {
     public String parseListFormatted(Object obj) throws IllegalArgumentException{
         if (obj != null) {
             return obj.toString()
-=======
-    public String parseListFormatted(Object o) throws NullPointerException{
-        if (o != null) {
-            return o.toString()
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
                     .replaceAll(".*\\{", "")
                     .replaceAll("}", "")
                     .replaceAll(", ", "\n");
         } else {
-<<<<<<< HEAD
             throw new IllegalArgumentException("Input string was null.");
-=======
-            //throw new NullPointerException("Parsed String was null.");
-            return "";
->>>>>>> c4e4f5eceab46d5640d26e8b62fda3ade1f01586
         }
     }
 }
