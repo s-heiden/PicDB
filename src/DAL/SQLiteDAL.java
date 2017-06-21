@@ -17,6 +17,8 @@ import static helpers.Helpers.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The DataAccessLayer implementation used by PicDB.
@@ -532,5 +534,29 @@ public class SQLiteDAL implements DataAccessLayer {
             closeStatementSilently(statement);
         }
         return id;
+    }
+    
+    public Map<String, Integer> getKeywordStrings() {
+        Map<String, Integer> keywordStrings = new HashMap<>();
+        final String string = "SELECT " + Pictures.COLUMN_PICTURES_IPTC_KEYWORDS
+                + ", COUNT(*) AS COUNT"
+                + " FROM " + DBSchema.Pictures.TABLE_NAME
+                + " GROUP BY " + DBSchema.Pictures.COLUMN_PICTURES_IPTC_KEYWORDS;
+                
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement(string);
+            rs = statement.executeQuery();
+            while (rs.next()) {
+                keywordStrings.put(rs.getString(Pictures.COLUMN_PICTURES_IPTC_KEYWORDS), rs.getInt("COUNT"));
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            closeResultSilently(rs);
+            closeStatementSilently(statement);
+        }
+        return keywordStrings;
     }
 }

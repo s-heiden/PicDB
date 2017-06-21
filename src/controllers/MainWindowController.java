@@ -83,7 +83,7 @@ public class MainWindowController implements Initializable, PictureNavHandler {
 
         // Create PictureNav
         pictureNav = new PictureNav(pathsForIDs);
-
+        
         // Register to get notified of clicks
         PictureNavNotifier.getInstance().register(this);
 
@@ -200,12 +200,11 @@ public class MainWindowController implements Initializable, PictureNavHandler {
     }
 
     /**
-     * Generates a report for all images.
+     * Generates a report for a single image.
      */
     @FXML
     public void generateImageReportAction(ActionEvent actionEvent) {
-        // TODO:
-        throw new UnsupportedOperationException("Not supported yet.");
+        BL.getInstance().generateImageReport(mainWindowPM.getCurrentPicture().getID());
     }
 
     /**
@@ -213,8 +212,7 @@ public class MainWindowController implements Initializable, PictureNavHandler {
      */
     @FXML
     public void generateTagReportAction(ActionEvent actionEvent) {
-        // TODO:
-        throw new UnsupportedOperationException("Not supported yet.");
+        BL.getInstance().generateTagReport();
     }
 
     /**

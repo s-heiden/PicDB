@@ -9,10 +9,21 @@ import static helpers.Helpers.deleteFromPicturePath;
 import static helpers.Helpers.existsInPicturePath;
 import static helpers.Helpers.getRandomString;
 import Models.*;
+import com.itextpdf.text.Chapter;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Section;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import helpers.Constants;
-import static helpers.Constants.PICTURE_PATH;
+import static helpers.Constants.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.*;
 
 /**
@@ -22,7 +33,7 @@ public final class BL implements BusinessLayer {
 
     private static BL blInstance;
     private static SQLiteDAL dal;
-
+    
     /**
      * Returns the single static instance.
      */
@@ -203,5 +214,117 @@ public final class BL implements BusinessLayer {
     @Override
     public CameraModel getCamera(int ID) {
         return dal.getCamera(ID);
+    }
+    
+    public void makeDir(String dirPath) throws SecurityException {
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            try {
+                dir.mkdir();
+            } catch (SecurityException e) {
+                throw new SecurityException("Could not make directory " + dirPath + ".");
+            }   
+        }
+    }
+     
+    public void generateTagReport() {
+        Map<String, Integer> keywordStrings = dal.getKeywordStrings();
+        Map<String, Integer> keywordCount = new HashMap<>();
+        String[] splitString;
+        for (String keywordString : keywordStrings.keySet()) {
+            splitString = keywordString.split("[,;\r\n]");
+            for (String keyword : splitString) {
+                keyword = keyword
+                        .toUpperCase()
+                        .replaceAll("[^-_0-9a-zA-Z]", "");
+                if (keywordCount.containsKey(keyword)) {
+                    keywordCount.put(keyword, keywordCount.get(keyword) + 1);
+                } else {
+                    keywordCount.put(keyword, 1);
+                }
+            }
+        }
+        
+        Document document = new Document();
+        try {
+            makeDir(REPORT_PATH);
+            PdfWriter.getInstance(document, new FileOutputStream(REPORT_PATH + "/"
+                    + TAG_REPORT_FILENAME + ".pdf"));
+            document.open();
+            document.addTitle("Tag-Report");
+            Font textFont = new Font(Font.getFamily(TEXT_FONT_FAMILY),
+                    TEXT_FONT_SIZE, Font.getStyleValue(TEXT_FONT_STYLE));
+            Font headlineFont = new Font(Font.getFamily(HEADLINE_FONT_FAMILY),
+                    HEADLINE_FONT_SIZE, Font.getStyleValue(HEADLINE_FONT_STYLE));
+            PdfPTable table = new PdfPTable(2);
+            table.addCell(new Phrase("Keyword / Tag", headlineFont));
+            table.addCell(new Phrase("Anzahl der Fotos", headlineFont));
+            for (String keyword : keywordCount.keySet()) {
+                table.addCell(keyword);
+                table.addCell(keywordCount.get(keyword).toString());
+            }
+            document.add(table);
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void generateImageReport(int ID) {
+        PictureModel picture = getPicture(ID);
+        Document document = new Document();
+        try {
+            makeDir(REPORT_PATH);
+            PdfWriter.getInstance(document, new FileOutputStream(REPORT_PATH + "/"
+                    + IMG_REPORT_FILENAME + ".pdf"));
+            document.open();
+            document.addTitle("Image-Report");
+            Image image = Image.getInstance(PICTURE_PATH + "/"
+                    + picture.getFileName().toString());
+            image.scaleToFit(525f, 750f);
+            document.add(image);
+            
+            Font textFont = new Font(Font.getFamily(TEXT_FONT_FAMILY),
+                    TEXT_FONT_SIZE, Font.getStyleValue(TEXT_FONT_STYLE));
+            Font headlineFont = new Font(Font.getFamily(HEADLINE_FONT_FAMILY),
+                    HEADLINE_FONT_SIZE, Font.getStyleValue(HEADLINE_FONT_STYLE));
+            
+            Paragraph EXIFPara = new Paragraph();
+            EXIFPara.setSpacingBefore(20.0f);
+            EXIFPara.setFirstLineIndent(10.0f);
+            Paragraph IPTCPara = (Paragraph)EXIFPara.clone();
+            Paragraph PhotographerPara = (Paragraph)EXIFPara.clone();
+            
+            EXIFPara.add(new Chunk("EXIFPara-Informationen:\n\n", headlineFont));
+            EXIFPara.add(new Chunk(parseListFormatted(picture.getEXIF()), textFont).setLineHeight(15.0f));
+            document.add(EXIFPara);
+            
+             IPTCPara.add(new Chunk("IPTC-Informationen:\n\n", headlineFont));
+            IPTCPara.add(new Chunk(parseListFormatted(picture.getIPTC()), textFont).setLineHeight(15.0f));
+            document.add(IPTCPara);
+
+            PhotographerModel m = picture.getPhotographer();
+            String photogr = parseListFormatted(picture.getPhotographer());
+            PhotographerPara.add(new Chunk("Fotograf:\n\n", headlineFont));
+            PhotographerPara.add(new Chunk(photogr != null ? photogr : "Fotograf is unbekannt.", textFont).setLineHeight(15.0f));
+            document.add(PhotographerPara);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            document.close();
+        }
+    }
+    
+    public String parseListFormatted(Object o) throws NullPointerException{
+        if (o != null) {
+            return o.toString()
+                    .replaceAll(".*\\{", "")
+                    .replaceAll("}", "")
+                    .replaceAll(", ", "\n");
+        } else {
+            //throw new NullPointerException("Parsed String was null.");
+            return "";
+        }
     }
 }
