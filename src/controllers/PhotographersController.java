@@ -92,7 +92,7 @@ public class PhotographersController implements Initializable {
     }
 
     /**
-     * Saves a photographer with the info given in the respective textfields.
+     * Saves a photographer with the info given in the respective text fields.
      */
     public void savePhotographerData(ActionEvent actionEvent) {
         // reset GUI

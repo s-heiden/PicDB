@@ -9,3 +9,5 @@ out/
 PicDB.iml
 /src/resources/properties
 *.db
+/reports
+*.pdf

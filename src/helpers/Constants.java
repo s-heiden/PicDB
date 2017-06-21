@@ -63,6 +63,21 @@ public class Constants {
     public static final String ISO_ACCEPTABLE_PATH = "iso_acceptable.png";
     public static final String EP_APERTURE_PRIORITY = "ep_aperture_priority.png";
     public static final String EP_NOT_DEFINED_PATH = "ep_not_defined.png";
-
     
+    /**
+     * file path and file names for reports.
+     */
+    public static final String REPORT_PATH = "reports";
+    public static final String TAG_REPORT_FILENAME = "TAG-Report";
+    public static final String IMG_REPORT_FILENAME = "Image-Report";
+    /**
+     * font families, ~sizes and ~styles for reports.
+     */
+    public static final String TEXT_FONT_FAMILY = "courier";
+    public static final String TEXT_FONT_STYLE = "normal";
+    public static final int TEXT_FONT_SIZE = 12;
+    public static final String HEADLINE_FONT_FAMILY = "default";
+    public static final String HEADLINE_FONT_STYLE = "bold";
+    public static final int HEADLINE_FONT_SIZE = 14;
+        
 }
