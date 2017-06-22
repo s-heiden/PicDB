@@ -58,8 +58,6 @@ public class MainWindowController implements Initializable, PictureNavHandler {
     @FXML
     private AnchorPane navAnchorPane;
     @FXML
-    private BorderPane rootPane;
-    @FXML
     private SplitPane splitPane;
     @FXML
     private HBox searchHBox;
@@ -88,7 +86,6 @@ public class MainWindowController implements Initializable, PictureNavHandler {
         PictureNavNotifier.getInstance().register(this);
 
         // Add PictureNav to BorderPane
-        // rootPane.setBottom(pictureNav);
         pictureNav.setMaxHeight(125);
         splitPane.getItems().add(pictureNav);
 
@@ -297,7 +294,7 @@ public class MainWindowController implements Initializable, PictureNavHandler {
 
     private Stage getPrimaryStage() {
         if (primaryStage == null) {
-            primaryStage = (Stage) rootPane.getScene().getWindow();
+            primaryStage = (Stage) splitPane.getScene().getWindow();
         }
         return primaryStage;
     }
