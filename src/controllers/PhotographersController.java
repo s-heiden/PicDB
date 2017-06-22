@@ -50,8 +50,6 @@ public class PhotographersController implements Initializable {
     private Button saveButton;
     @FXML
     private Button deleteButton;
-    @FXML
-    private Button newButton;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

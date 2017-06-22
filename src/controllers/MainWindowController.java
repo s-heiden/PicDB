@@ -7,6 +7,7 @@ import BIF.SWE2.interfaces.presentationmodels.IPTCPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.MainWindowPresentationModel;
 import BIF.SWE2.interfaces.presentationmodels.PicturePresentationModel;
 import BL.BL;
+import at.twif.picturenav.App;
 import at.twif.picturenav.PictureNav;
 import at.twif.picturenav.PictureNavHandler;
 import at.twif.picturenav.PictureNavNotifier;
@@ -22,7 +23,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -38,6 +38,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import org.apache.log4j.Logger;
 import viewModels.MainWindowPM;
 import viewModels.PicturePM;
 
@@ -56,14 +57,14 @@ public class MainWindowController implements Initializable, PictureNavHandler {
     @FXML
     private AnchorPane selectedImagePane;
     @FXML
-    private AnchorPane navAnchorPane;
-    @FXML
     private SplitPane splitPane;
     @FXML
     private HBox searchHBox;
 
     private PictureNav pictureNav;
-
+    
+    static Logger log = Logger.getLogger(App.class.getName());
+    
     @FXML
     protected void quitAction(ActionEvent event) {
         getPrimaryStage().close();

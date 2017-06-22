@@ -9,14 +9,7 @@ import static helpers.Helpers.deleteFromPicturePath;
 import static helpers.Helpers.existsInPicturePath;
 import static helpers.Helpers.getRandomString;
 import Models.*;
-import com.itextpdf.text.Chapter;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Section;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import helpers.Constants;
@@ -25,6 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.*;
+import java.util.List;
 
 /**
  * The BusinessLayer implementation used by the application.
@@ -216,7 +210,7 @@ public final class BL implements BusinessLayer {
     }
     
     /**
-     * makes a directory, if it does not exist yet.
+     * Makes a directory, if it does not exist yet.
      * 
      * @param dirPath
      * @throws SecurityException if it fails to make the directory
@@ -233,7 +227,7 @@ public final class BL implements BusinessLayer {
     }
      
     /**
-     * generates a report pdf-file in the reports directory
+     * Generates a report pdf-file in the reports directory
      * which lists all keywords that occur and the number of their occurrences.
      */
     public void generateTagReport() {
@@ -266,8 +260,8 @@ public final class BL implements BusinessLayer {
             Font headlineFont = new Font(Font.getFamily(HEADLINE_FONT_FAMILY),
                     HEADLINE_FONT_SIZE, Font.getStyleValue(HEADLINE_FONT_STYLE));
             PdfPTable table = new PdfPTable(2);
-            table.addCell(new Phrase("Keyword / Tag", headlineFont));
-            table.addCell(new Phrase("Anzahl der Fotos", headlineFont));
+            table.addCell(new Phrase("Keyword/Tag", headlineFont));
+            table.addCell(new Phrase("Number of photos", headlineFont));
             for (String keyword : keywordCount.keySet()) {
                 table.addCell(keyword);
                 table.addCell(keywordCount.get(keyword).toString());
@@ -280,7 +274,7 @@ public final class BL implements BusinessLayer {
     }
 
     /**
-     * generates an report pdf-file of the active Image, including the picture,
+     * Generates an report pdf-file of the active Image, including the picture,
      * the EXIF- and IPTC-Information and the Photographer, if known.
      * @param ID  - must be a valid picture-ID
      */
@@ -291,11 +285,11 @@ public final class BL implements BusinessLayer {
             makeDir(REPORT_PATH);
             PdfWriter.getInstance(document, new FileOutputStream(REPORT_PATH + "/"
                     + IMG_REPORT_FILENAME + "_"
-                    + picture.getFileName().toString() + ".pdf"));
+                    + picture.getFileName() + ".pdf"));
             document.open();
             document.addTitle("Image-Report");
             Image image = Image.getInstance(PICTURE_PATH + "/"
-                    + picture.getFileName().toString());
+                    + picture.getFileName());
             image.scaleToFit(525f, 750f);
             document.add(image);
             
@@ -310,17 +304,17 @@ public final class BL implements BusinessLayer {
             Paragraph IPTCPara = (Paragraph)EXIFPara.clone();
             Paragraph PhotographerPara = (Paragraph)EXIFPara.clone();
             
-            EXIFPara.add(new Chunk("EXIFPara-Informationen:\n\n", headlineFont));
+            EXIFPara.add(new Chunk("EXIF-Info:\n\n", headlineFont));
             EXIFPara.add(new Chunk(parseListFormatted(picture.getEXIF()), textFont).setLineHeight(15.0f));
             document.add(EXIFPara);
             
-            IPTCPara.add(new Chunk("IPTC-Informationen:\n\n", headlineFont));
+            IPTCPara.add(new Chunk("IPTC-Info:\n\n", headlineFont));
             IPTCPara.add(new Chunk(parseListFormatted(picture.getIPTC()), textFont).setLineHeight(15.0f));
             document.add(IPTCPara);
 
             String photogr = parseListFormatted(picture.getPhotographer());
-            PhotographerPara.add(new Chunk("Fotograf:\n\n", headlineFont));
-            PhotographerPara.add(new Chunk(photogr != null ? photogr : "Fotograf is unbekannt.", textFont).setLineHeight(15.0f));
+            PhotographerPara.add(new Chunk("Photographer:\n\n", headlineFont));
+            PhotographerPara.add(new Chunk(photogr != null ? photogr : "Photographer unknown.", textFont).setLineHeight(15.0f));
             document.add(PhotographerPara);
             
         } catch (Exception e) {
@@ -331,8 +325,8 @@ public final class BL implements BusinessLayer {
     }
     
     /**
-     * converts an Object with JSON-like toString() functions into a
-     * line by line paragraph relating keys an values
+     * Converts an Object with JSON-like toString() functions into a
+     * line by line paragraph relating keys an values.
      * @param obj - must have JSON like toString() output; must not be null.
      * @return a formatted multi-line string
      * @throws IllegalArgumentException 
@@ -344,7 +338,7 @@ public final class BL implements BusinessLayer {
                     .replaceAll("}", "")
                     .replaceAll(", ", "\n");
         } else {
-            throw new IllegalArgumentException("Input string was null.");
+           throw new IllegalArgumentException("Input string was null.");
         }
     }
 }

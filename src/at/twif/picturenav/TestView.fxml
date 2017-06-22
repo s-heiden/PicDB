@@ -6,7 +6,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.twif.picturenav.TestController">
-    
+<BorderPane
+    fx:id="borderPane" 
+    prefHeight="600.0" 
+    prefWidth="800.0" 
+    xmlns="http://javafx.com/javafx/8" 
+    xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="at.twif.picturenav.TestController">    
 </BorderPane>

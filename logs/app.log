@@ -1,6 +1,0 @@
-12:28:01.538 [JavaFX Application Thread] INFO  controllers.PhotographersController - photographer saved to DB
-12:28:52.521 [JavaFX Application Thread] ERROR controllers.PhotographersController - birthday is not valid
-12:28:57.748 [JavaFX Application Thread] ERROR controllers.PhotographersController - birthday is not valid
-12:29:01.427 [JavaFX Application Thread] ERROR controllers.PhotographersController - birthday is not valid
-12:29:05.763 [JavaFX Application Thread] ERROR controllers.PhotographersController - birthday is not valid
-12:29:21.217 [JavaFX Application Thread] INFO  controllers.PhotographersController - photographer saved to DB

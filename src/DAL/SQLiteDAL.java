@@ -193,12 +193,6 @@ public class SQLiteDAL implements DataAccessLayer {
         return o;
     }
 
-    /**
-     * Returns the PhotographerModel with the given id.
-     *
-     * @param id the id of the photographer that is being searched
-     * @return the PhotographerModel with the given id.
-     */
     @Override
     public PhotographerModel getPhotographer(int id) {
         return (Photographer) getObjectFrom(id, DBTable.PHOTOGRAPHERS);
@@ -235,11 +229,6 @@ public class SQLiteDAL implements DataAccessLayer {
         return picture;
     }
 
-    /**
-     * Saves all changes to the database.
-     *
-     * @param picture the PictureModel object which should be saved to the database
-     */
     @Override
     public void save(PictureModel picture) {
         PreparedStatement statement = null;
@@ -292,12 +281,6 @@ public class SQLiteDAL implements DataAccessLayer {
         }
     }
 
-    /**
-     * Deletes a picture with the given id from the database.
-     *
-     * @param id the id of the picture that is to be deleted.
-     * @throws java.lang.Exception
-     */
     @Override
     public void deletePicture(int id) throws Exception {
         deleteRowFromTable(id, DBTable.PICTURES);
@@ -316,25 +299,11 @@ public class SQLiteDAL implements DataAccessLayer {
         }
     }
 
-    /**
-     * Deletes a Photographer. An exception is thrown if a photographer is still linked to a picture.
-     *
-     * @param id the photographer which should to be deleted
-     */
     @Override
     public void deletePhotographer(int id) {
         deleteRowFromTable(id, DBTable.PHOTOGRAPHERS);
     }
 
-    /**
-     * Returns a filtered list of Pictures from the directory, based on a database SQLiteDAL.
-     *
-     * @param searchString
-     * @param photographerParts may contain photographer information which is searched in the database
-     * @param iptcParts may contain Iptc information which is searched in the database
-     * @param exifParts may contain Exif information which is searched in the database
-     * @return a Collection of PictureModel objects which match the filter criteria
-     */
     @Override
     public Collection<PictureModel> getPictures(String searchString, PhotographerModel photographerParts, IPTCModel iptcParts, EXIFModel exifParts) {
         if (photographerParts != null || iptcParts != null || exifParts != null) {
@@ -381,11 +350,6 @@ public class SQLiteDAL implements DataAccessLayer {
         return pictures;
     }
 
-    /**
-     * Returns a collection of all photographers.
-     *
-     * @return collection of all photographers
-     */
     @Override
     public Collection<PhotographerModel> getPhotographers() {
         Collection<PhotographerModel> photographerModels = new ArrayList<>();
@@ -395,11 +359,6 @@ public class SQLiteDAL implements DataAccessLayer {
         return photographerModels;
     }
 
-    /**
-     * Saves all changes of the given PhotographerModel instance to the database.
-     *
-     * @param photographer the PhotographerModel instance whose member information should be stored
-     */
     @Override
     public void save(PhotographerModel photographer) {
         PreparedStatement statement = null;
@@ -462,11 +421,6 @@ public class SQLiteDAL implements DataAccessLayer {
         return objects;
     }
 
-    /**
-     * Returns a list of all cameras.
-     *
-     * @return a list of all cameras
-     */
     @Override
     public Collection<CameraModel> getCameras() {
         Collection<CameraModel> cameraModels = new ArrayList<>();
@@ -476,12 +430,6 @@ public class SQLiteDAL implements DataAccessLayer {
         return cameraModels;
     }
 
-    /**
-     * Returns the camera with the given id.
-     *
-     * @param id the id that is searched
-     * @return the camera with the given id
-     */
     @Override
     public Camera getCamera(int id) {
         return (Camera) getObjectFrom(id, DBTable.CAMERAS);
@@ -537,8 +485,8 @@ public class SQLiteDAL implements DataAccessLayer {
     }
     
     /**
-     * reads an aggregation of all occurring keyword strings / phrases and the current number of their occurrences
-     * @return 
+     * Reads an aggregation of all occurring keyword strings/phrases
+     * and the current number of their occurrences.
      */
     public Map<String, Integer> getKeywordStrings() {
         Map<String, Integer> keywordStrings = new HashMap<>();
